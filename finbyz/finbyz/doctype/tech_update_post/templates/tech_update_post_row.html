@@ -1,0 +1,50 @@
+{%- set post = doc -%}
+<div class="web-list-item blog-list-item tech-update-main">
+	<div class="row">
+		<div class="col-xs-12 tech-update-first">
+			<h2><a href="/{{ post.route }}">{{ post.title }}</a></h2><hr class="underline">
+			{% if post.cover_image %}
+			<p>
+				<img src="{{ post.cover_image }}" alt="{{post.title}} - Cover Image"  id="post-image" / style='blog-cover-image'>
+			</p>
+			{% endif %}
+
+			<!-- <div style='margin-top: 15px;'>
+				<div class="inline-block" style="vertical-align: top">
+					<div class="avatar">
+						<img itemprop="thumbnailUrl" src="{{ post.avatar or "/assets/frappe/images/default-avatar.png" }}" />
+					</div>
+				</div>
+				<div class="inline-block" style="width: calc(100% - 100px)">
+					<div class='text-muted'>
+						<a href="/tech_update?blogger={{ post.blogger }}">{{ post.full_name }}</a>
+					</div>
+					<div class="text-muted small">
+						{{ frappe.format_date(post.published_on) }}
+						{% if post.comments %}	
+						<span style='display: inline-block; margin-left: 10px;'>
+						<i class='octicon octicon-comment-discussion'></i> {{ post.comments }}
+						</span>
+						{% endif %}
+					</div>
+				</div>
+			</div> -->
+		</div>
+		<div class="tech-update-second">
+			<div class="row row1">
+				<div class="col-md-2 col-sm-2 col-xs-3">
+					<div class="date">
+						<p>{{ frappe.utils.get_datetime(post.published).strftime("%d") }}<br>
+						<span>{{ frappe.utils.get_datetime(post.published).strftime("%b, %Y") }}</span></p>
+					</div>
+				</div>
+				<div class="col-md-10 col-sm-10 col-xs-9 detail">
+					<p class="title"><a href="/{{ post.route }}">{{ post.title }}</a></p>
+					<p class="sub">By <a href="/tech_update?blogger={{ post.blogger }}">{{ post.full_name }}</a> | {{ frappe.format_date(post.published_on) }} | Categories: {{ post.blog_category }} {% if _user_tags -%}| Tags: {{ post._user_tags }} {% endif %}</p>
+					<p class="sub">{{ post.intro }}</p>					
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</div>
