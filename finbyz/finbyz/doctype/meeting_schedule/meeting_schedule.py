@@ -14,22 +14,22 @@ from frappe.contacts.doctype.address.address import get_address_display, get_def
 from frappe.contacts.doctype.contact.contact import get_contact_details, get_default_contact
 
 class MeetingSchedule(Document):
-	def send_invitation(self):
-		if not self.email_id:
-			msgprint(_("Please enter email id"))
-			return
+	# def send_invitation(self):
+		# if not self.email_id:
+			# msgprint(_("Please enter email id"))
+			# return
 		
-		subject = "Scheduled Meeting on %s " % get_datetime(self.scheduled_from).strftime("%A %d-%b-%Y")
+		# subject = "Scheduled Meeting on %s " % get_datetime(self.scheduled_from).strftime("%A %d-%b-%Y")
 		
-		r = make(recipients=self.email_id,
-			subject=subject, 
-			content=self.invitation_message,
-			sender=frappe.session.user,
-			doctype=self.doctype, 
-			name=self.name,
-			send_email=True)
+		# r = make(recipients=self.email_id,
+			# subject=subject, 
+			# content=self.invitation_message,
+			# sender=frappe.session.user,
+			# doctype=self.doctype, 
+			# name=self.name,
+			# send_email=True)
 		
-		msgprint(_("Mail sent successfully"))
+		# msgprint(_("Mail sent successfully"))
 
 @frappe.whitelist()
 def make_meeting(source_name, target_doc=None):	
