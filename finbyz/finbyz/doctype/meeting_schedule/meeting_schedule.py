@@ -14,6 +14,7 @@ from frappe.contacts.doctype.address.address import get_address_display, get_def
 from frappe.contacts.doctype.contact.contact import get_contact_details, get_default_contact
 
 class MeetingSchedule(Document):
+	pass
 	# def send_invitation(self):
 		# if not self.email_id:
 			# msgprint(_("Please enter email id"))
