@@ -4,12 +4,14 @@ from __future__ import unicode_literals
 import frappe
 import datetime
 from frappe import msgprint, db, _
-from frappe.utils import get_fullname, get_datetime, now_datetime, get_url_to_form
+from frappe.utils import get_fullname, get_datetime, now_datetime, get_url_to_form, date_diff, add_days,add_months, getdate
 from frappe.core.doctype.communication.email import make
 from frappe.contacts.doctype.address.address import get_address_display, get_default_address
 from frappe.contacts.doctype.contact.contact import get_contact_details, get_default_contact
 from frappe.utils.jinja import validate_template
 from frappe.model.mapper import get_mapped_doc
+from erpnext.accounts.utils import get_fiscal_year
+
 
 @frappe.whitelist()
 def leadmeeting_on_submit(self, method):
@@ -361,3 +363,44 @@ def set_other_values(out, party, party_type):
 		to_copy = ["supplier_name", "supplier_type", "language"]
 	for f in to_copy:
 		out[f] = party.get(f)
+		
+
+@frappe.whitelist()		
+def recalculate_depreciation(doc_name):
+	doc = frappe.get_doc("Asset", doc_name)
+	# fiscal_year = get_fiscal_year(doc.purchase_date)[0]
+	# frappe.errprint(fiscal_year)
+	year_end = get_fiscal_year(doc.purchase_date)[2]
+	# frappe.errprint(year_end)
+	# year_end_date = frappe.db.get_value("Fiscal Year","2017-2018","year_end_date")
+	# frappe.errprint(year_end_date)
+	useful_life_year_1 = date_diff(year_end,doc.purchase_date)
+	
+	if doc.schedules[0].depreciation_amount:
+		sl_dep_year_1 = round((doc.schedules[1].depreciation_amount * useful_life_year_1)/ 365,2)
+		#frappe.errprint(sl_dep_year_1)
+		sl_dep_year_last = round(doc.schedules[1].depreciation_amount - sl_dep_year_1,2)
+		frappe.db.set_value("Asset", doc_name, "depreciation_method", "Manual")
+		frappe.db.set_value("Depreciation Schedule", doc.schedules[0].name, "depreciation_amount", sl_dep_year_1)
+		frappe.db.set_value("Depreciation Schedule", doc.schedules[0].name, "accumulated_depreciation_amount", sl_dep_year_1)
+		total_depre = len(doc.get('schedules'))
+		if (doc.total_number_of_depreciations >= len(doc.get('schedules'))):
+			fields =dict(
+				schedule_date = add_months(doc.next_depreciation_date, doc.total_number_of_depreciations*12),
+				depreciation_amount = sl_dep_year_last,
+				accumulated_depreciation_amount = doc.gross_purchase_amount - doc.expected_value_after_useful_life,
+				parent = doc.name,
+				parenttype = doc.doctype,
+				parentfield = 'schedules',
+				idx = len(doc.get('schedules'))+1	
+			)
+			schedule = frappe.new_doc("Depreciation Schedule")
+			schedule.db_set(fields, commit=True)
+			schedule.insert(ignore_permissions=True)
+			schedule.save(ignore_permissions=True)
+			frappe.db.commit
+			doc.reload()
+		else:
+			frappe.db.set_value("Depreciation Schedule", doc.schedules[(len(doc.get('schedules')))-1].name, "depreciation_amount", sl_dep_year_last)
+			frappe.db.commit
+		return sl_dep_year_1
