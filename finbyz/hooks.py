@@ -96,7 +96,11 @@ doc_events = {
 	"Sales Invoice": {
 		"on_submit": "finbyz.api.si_on_submit",
 		"on_cancel": "finbyz.api.si_on_cancel"
+	},
+	"Employee": {
+		"on_update": "finbyz.api.send_employee_birthday_mails"
 	}
+	
 }
 
 # Scheduled Tasks

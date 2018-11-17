@@ -404,3 +404,29 @@ def recalculate_depreciation(doc_name):
 			frappe.db.set_value("Depreciation Schedule", doc.schedules[(len(doc.get('schedules')))-1].name, "depreciation_amount", sl_dep_year_last)
 			frappe.db.commit
 		return sl_dep_year_1
+
+
+@frappe.whitelist()
+def send_employee_birthday_mails(self,method):
+	data = db.sql("""
+		SELECT
+			employee_name, company_email
+		FROM
+			`tabEmployee`
+		WHERE
+			status = 'Active' 
+			and DATE_FORMAT(date_of_birth,'%m-%d') = DATE_FORMAT(CURDATE(),'%m-%d') """, as_dict=1)
+
+	for row in data:
+		recipients = [row.company_email]
+		message = """<p>
+				Dear {0},
+			</p>
+			<img src="/files/Employee_Birthday.png" style="position: relative;">
+			<p style="font-size: 30px;color: #FF6550;position: absolute;top:60%;left: 5%">
+			Happy Birthday {{ doc.employee_name }}</p>""".format(row.employee_name)
+
+		sendmail(recipients = recipients,
+				cc = ['info@finbyz.com'],
+				subject = 'Happy Birthday ' + row.employee_name,
+				message = message)
