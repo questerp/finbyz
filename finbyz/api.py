@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 import frappe
 import datetime
-from frappe import msgprint, db, _
+from frappe import sendmail, msgprint, db, _
 from frappe.utils import get_fullname, get_datetime, now_datetime, get_url_to_form, date_diff, add_days,add_months, getdate
 from frappe.core.doctype.communication.email import make
 from frappe.contacts.doctype.address.address import get_address_display, get_default_address
@@ -408,6 +408,7 @@ def recalculate_depreciation(doc_name):
 
 @frappe.whitelist()
 def send_employee_birthday_mails(self,method):
+	frappe.errprint("In Function")
 	data = db.sql("""
 		SELECT
 			employee_name, company_email
@@ -418,6 +419,7 @@ def send_employee_birthday_mails(self,method):
 			and DATE_FORMAT(date_of_birth,'%m-%d') = DATE_FORMAT(CURDATE(),'%m-%d') """, as_dict=1)
 
 	for row in data:
+		frappe.errprint("In Raw Data")
 		recipients = [row.company_email]
 		message = """<p>
 				Dear {0},
@@ -425,7 +427,7 @@ def send_employee_birthday_mails(self,method):
 			<img src="/files/Employee_Birthday.png" style="position: relative;">
 			<p style="font-size: 30px;color: #FF6550;position: absolute;top:60%;left: 5%">
 			Happy Birthday {{ doc.employee_name }}</p>""".format(row.employee_name)
-
+		frappe.errprint("Before email Sent")
 		sendmail(recipients = recipients,
 				cc = ['info@finbyz.com'],
 				subject = 'Happy Birthday ' + row.employee_name,
