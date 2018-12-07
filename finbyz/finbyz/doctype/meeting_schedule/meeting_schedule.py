@@ -23,6 +23,7 @@ class MeetingSchedule(Document):
 		
 		r = make(recipients=self.email_id,
 			subject=subject, 
+			cc = self.cc_to,
 			content=self.invitation_message,
 			sender=frappe.session.user,
 			doctype=self.doctype, 
