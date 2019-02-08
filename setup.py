@@ -6,7 +6,7 @@ import re, ast
 # get version from __version__ variable in finbyz/__init__.py
 _version_re = re.compile(r'__version__\s+=\s+(.*)')
 
-with open(‘requirements.txt’) as f:
+with open('requirements.txt') as f:
 	install_requires = f.read().strip().split(’\n’)
 
 with open('finbyz/__init__.py', 'rb') as f:
