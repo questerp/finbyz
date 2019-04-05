@@ -432,3 +432,27 @@ def send_employee_birthday_mails(self,method):
 				cc = ['info@finbyz.com'],
 				subject = 'Happy Birthday ' + row.employee_name,
 				message = message)
+				
+@frappe.whitelist()
+def asset_on_update_after_submit(self, method):
+	for d in self.get('finance_books'):
+		for row in self.get('schedules'):
+			if not row.finance_book:
+				row.db_set('finance_book', d.finance_book)
+				row.db_set('finance_book_id', d.idx)
+				
+@frappe.whitelist()
+def docs_before_naming(self, method):
+	from erpnext.accounts.utils import get_fiscal_year
+
+	date = self.get("transaction_date") or self.get("posting_date") or getdate()
+
+	fy = get_fiscal_year(date)[0]
+	fiscal = frappe.db.get_value("Fiscal Year", fy, 'fiscal')
+
+	if fiscal:
+		self.fiscal = fiscal
+	else:
+		fy_years = fy.split("-")
+		fiscal = fy_years[0][2:] + '-' + fy_years[1][2:]
+		self.fiscal = fiscal

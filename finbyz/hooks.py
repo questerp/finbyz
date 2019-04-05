@@ -97,8 +97,11 @@ doc_events = {
 		"on_submit": "finbyz.api.si_on_submit",
 		"on_cancel": "finbyz.api.si_on_cancel"
 	},
-	
+	("Sales Invoice", "Purchase Invoice", "Payment Request", "Payment Entry", "Journal Entry", "Material Request", "Purchase Order", "Work Order", "Production Plan", "Stock Entry", "Quotation", "Sales Order", "Delivery Note", "Purchase Receipt", "Packing Slip"): {
+		"before_naming": "finbyz.api.docs_before_naming",
+	}
 }
+
 
 # Scheduled Tasks
 # ---------------
