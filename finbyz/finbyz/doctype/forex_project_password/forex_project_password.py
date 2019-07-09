@@ -53,6 +53,7 @@ class ForexProjectPassword(Document):
 
 		else:
 			response_json = response.json()
+			self.company_id = cint(response_json['id'])
 
 			for user in response_json['users']:
 				for row in self.user:
@@ -66,7 +67,7 @@ class ForexProjectPassword(Document):
 				row.inactive = 1
 
 	def get_content(self):
-		email = "\n".join(cstr(self.contact_email).split(","))
+		email = cstr(self.contact_email).split(",")[0]
 		content = {
 			"company_name": self.party_name,
 			"person_name": self.contact_display,
