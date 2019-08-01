@@ -22,6 +22,7 @@ def get_data(filters):
 	for asset in assets:
 		row = frappe._dict()
 		row.asset = asset.name
+		row.purchase_date = asset.purchase_date
 		row.asset_category = asset.asset_category
 		row.update(asset_costs.get(asset.name))
 
@@ -140,37 +141,43 @@ def get_columns(filters):
 			"width": 120
 		},
 		{
-			"label": _("Cost as on") + " " + formatdate(filters.day_before_from_date),
+			"label": _("Purchase Date"),
+			"fieldname": "purchase_date",
+			"fieldtype": "Date",
+			"width": 120
+		},
+		{
+			"label": formatdate(filters.day_before_from_date) + " : " + _("Cost"),
 			"fieldname": "cost_as_on_from_date",
 			"fieldtype": "Currency",
 			"width": 140
 		},
 		{
-			"label": _("Cost of New Purchase"),
+			"label": _("New Purchase"),
 			"fieldname": "cost_of_new_purchase",
 			"fieldtype": "Currency",
-			"width": 140
+			"width": 120
 		},
 		{
-			"label": _("Cost of Sold Asset"),
+			"label": _("Sold Asset"),
 			"fieldname": "cost_of_sold_asset",
 			"fieldtype": "Currency",
-			"width": 140
+			"width": 120
 		},
 		{
-			"label": _("Cost of Scrapped Asset"),
+			"label": _("Scrapped Asset"),
 			"fieldname": "cost_of_scrapped_asset",
 			"fieldtype": "Currency",
-			"width": 140
+			"width": 120
 		},
 		{
-			"label": _("Cost as on") + " " + formatdate(filters.to_date),
+			"label": formatdate(filters.to_date) + " : " + _("Cost") ,
 			"fieldname": "cost_as_on_to_date",
 			"fieldtype": "Currency",
 			"width": 140
 		},
 		{
-			"label": _("Accumulated Depreciation as on") + " " + formatdate(filters.day_before_from_date),
+			"label": formatdate(filters.day_before_from_date) + " : " + _("Accumulated Depreciation"),
 			"fieldname": "accumulated_depreciation_as_on_from_date",
 			"fieldtype": "Currency",
 			"width": 270
@@ -188,19 +195,19 @@ def get_columns(filters):
 			"width": 300
 		},
 		{
-			"label": _("Accumulated Depreciation as on") + " " + formatdate(filters.to_date),
+			"label": formatdate(filters.to_date) + " : " + _("Accumulated Depreciation"),
 			"fieldname": "accumulated_depreciation_as_on_to_date",
 			"fieldtype": "Currency",
 			"width": 270
 		},
 		{
-			"label": _("Net Asset value as on") + " " + formatdate(filters.day_before_from_date),
+			"label": formatdate(filters.day_before_from_date) + " : " + _("Net Asset value"),
 			"fieldname": "net_asset_value_as_on_from_date",
 			"fieldtype": "Currency",
 			"width": 200
 		},
 		{
-			"label": _("Net Asset value as on") + " " + formatdate(filters.to_date),
+			"label": formatdate(filters.to_date) + " : " + _("Net Asset value"),
 			"fieldname": "net_asset_value_as_on_to_date",
 			"fieldtype": "Currency",
 			"width": 200
