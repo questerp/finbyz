@@ -6,6 +6,7 @@ import frappe
 import datetime
 from frappe import _, msgprint
 from frappe.utils import getdate, nowdate, date_diff
+from frappe.utils.user import get_user_fullname
 
 def execute(filters=None):
 	filters.from_date = getdate(filters.from_date or nowdate())
@@ -41,9 +42,9 @@ def get_data(filters):
 	
 	where_clause += " and co.creation between '%s 00:00:00' and '%s 23:59:59' " % (filters.from_date, filters.to_date)
 	
-	return frappe.db.sql("""
+	data = frappe.db.sql("""
 		select
-			co.reference_name as "Lead", co.owner as "User" , co.creation as "Date", co.comment_by as "Caller", ld.company_name as "Organization", ld.lead_name as "Person",  co.subject as "Comment", ld.contact_date as "Schedule", ld.source as "Source" , ld.Status as "Status" , ld.mobile_no as "Mobile" ,	ld.phone as "Phone"
+			co.reference_name as "Lead", co.owner as "User" , co.creation as "Date", co.comment_by as "Caller", ld.company_name as "Organization", ld.lead_name as "Person",  co.content as "Comment", co.comment_email, ld.contact_date as "Schedule", ld.source as "Source" , ld.Status as "Status" , ld.mobile_no as "Mobile" ,	ld.phone as "Phone"
 		from
 			`tabComment` as co left join `tabLead` as ld on (co.reference_name = ld.name)
 		where
@@ -51,7 +52,12 @@ def get_data(filters):
 			%s
 		order by
 			co.creation desc"""%where_clause, as_dict=1)
-			
+
+	for row in data:
+		row["Caller"] = get_user_fullname(row['comment_email'])
+
+	return data
+
 def get_chart_data(data, filters):
 	count = []
 	based_on, date_range = None, None
