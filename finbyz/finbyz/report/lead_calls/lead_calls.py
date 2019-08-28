@@ -36,21 +36,21 @@ def get_columns():
 def get_data(filters):
 
 	where_clause = ''
-	where_clause+=filters.user and " and co.user = '%s' " % filters.user or ""	
+	where_clause+=filters.user and " and co.owner = '%s' " % filters.user or ""	
 	where_clause+=filters.lead and " and co.reference_name = '%s' " % filters.lead or ""
 	
-	where_clause += " and co.communication_date between '%s 00:00:00' and '%s 23:59:59' " % (filters.from_date, filters.to_date)
+	where_clause += " and co.creation between '%s 00:00:00' and '%s 23:59:59' " % (filters.from_date, filters.to_date)
 	
 	return frappe.db.sql("""
 		select
-			co.reference_name as "Lead", co.user as "User" , co.communication_date as "Date", co.sender_full_name as "Caller", ld.company_name as "Organization", ld.lead_name as "Person",  co.subject as "Comment", ld.contact_date as "Schedule", ld.source as "Source" , ld.Status as "Status" , ld.mobile_no as "Mobile" ,	ld.phone as "Phone"
+			co.reference_name as "Lead", co.owner as "User" , co.creation as "Date", co.comment_by as "Caller", ld.company_name as "Organization", ld.lead_name as "Person",  co.subject as "Comment", ld.contact_date as "Schedule", ld.source as "Source" , ld.Status as "Status" , ld.mobile_no as "Mobile" ,	ld.phone as "Phone"
 		from
-			`tabCommunication` as co left join `tabLead` as ld on (co.reference_name = ld.name)
+			`tabComment` as co left join `tabLead` as ld on (co.reference_name = ld.name)
 		where
 			co.reference_doctype = "Lead" and co.comment_type="Comment"
 			%s
 		order by
-			co.communication_date desc"""%where_clause, as_dict=1)
+			co.creation desc"""%where_clause, as_dict=1)
 			
 def get_chart_data(data, filters):
 	count = []
@@ -71,7 +71,7 @@ def get_chart_data(data, filters):
 		date_range = int(to_date.strftime(period[based_on])) - int(from_date.strftime(period[based_on]))
 		
 	if based_on == "Day":
-		for d in xrange(date_range+1):
+		for d in range(date_range+1):
 			cnt = 0
 			date = from_date + datetime.timedelta(days=d)
 			for row in data:
@@ -84,7 +84,7 @@ def get_chart_data(data, filters):
 	
 	else:
 		period_date = dict()
-		for x in xrange(date_diff(to_date, from_date)+1):
+		for x in range(date_diff(to_date, from_date)+1):
 			tmp_date = from_date + datetime.timedelta(days=x)
 			tmp_period = str(tmp_date.strftime(period[based_on]))
 			if tmp_period not in period_date:
