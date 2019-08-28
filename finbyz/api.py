@@ -170,15 +170,14 @@ def new_comm(self, method):
 	url = get_url_to_form("Lead Meetings", self.name)
 	# url = "http://erp.finbyz.in/desk#Form/Lead%20Meetings/" + self.name
 	discussed = "<strong><a href="+url+">"+self.name+"</a>: </strong>"+ user_name + " Met "+ self.contact_person + " On "+ self.meeting_from +"<br>" + self.discussion.replace('\n', "<br>")
-	cm = frappe.new_doc("Communication")
+	cm = frappe.new_doc("Comment")
 	cm.subject = self.name
-	cm.communication_type = "Comment"
 	cm.comment_type = "Comment"
 	cm.content = discussed
 	cm.reference_doctype = self.party_type
 	cm.reference_name = self.party
-	cm.user = frappe.session.user
-	cm.sender_full_name = user_name
+	cm.comment_email = frappe.session.user
+	cm.comment_by = user_name
 	cm.save(ignore_permissions=True)
 	if self.party_type == "Lead":
 		target_lead = frappe.get_doc("Lead", self.party)
