@@ -5,8 +5,7 @@ from __future__ import unicode_literals
 import frappe
 import datetime
 from frappe import _, msgprint
-from frappe.utils import getdate, nowdate, date_diff
-from frappe.utils.user import get_user_fullname
+from frappe.utils import getdate, nowdate, date_diff, get_fullname
 
 def execute(filters=None):
 	filters.from_date = getdate(filters.from_date or nowdate())
@@ -54,7 +53,8 @@ def get_data(filters):
 			co.creation desc"""%where_clause, as_dict=1)
 
 	for row in data:
-		row["Caller"] = get_user_fullname(row['comment_email'])
+		if not row["Caller"]:
+			row["Caller"] = get_fullname(row['comment_email'])
 
 	return data
 
