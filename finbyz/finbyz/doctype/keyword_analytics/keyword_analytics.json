@@ -1,0 +1,144 @@
+{
+ "autoname": "naming_series:",
+ "creation": "2019-08-31 10:03:23.180170",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "date_from",
+  "total_impressions",
+  "total_clicks",
+  "column_break_9",
+  "posting_date",
+  "date_to",
+  "average_position",
+  "ctr",
+  "amended_from",
+  "section_break_11",
+  "keyword_details"
+ ],
+ "fields": [
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date"
+  },
+  {
+   "fieldname": "date_from",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date From",
+   "reqd": 1
+  },
+  {
+   "fieldname": "date_to",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date To",
+   "reqd": 1
+  },
+  {
+   "fieldname": "total_impressions",
+   "fieldtype": "Int",
+   "label": "Total Impressions"
+  },
+  {
+   "fieldname": "total_clicks",
+   "fieldtype": "Int",
+   "label": "Total Clicks"
+  },
+  {
+   "fieldname": "average_position",
+   "fieldtype": "Float",
+   "label": "Average Position"
+  },
+  {
+   "fieldname": "ctr",
+   "fieldtype": "Float",
+   "label": "CTR"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Keyword Analytics",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "FB-KA-",
+   "reqd": 1
+  },
+  {
+   "fieldname": "keyword_details",
+   "fieldtype": "Table",
+   "label": "Keyword Details",
+   "options": "Keyword Details"
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break"
+  }
+ ],
+ "is_submittable": 1,
+ "modified": "2019-08-31 10:25:42.085004",
+ "modified_by": "Administrator",
+ "module": "Finbyz",
+ "name": "Keyword Analytics",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
