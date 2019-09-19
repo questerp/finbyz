@@ -42,7 +42,7 @@ class ForexProjectPassword(Document):
 						break
 
 	def update_company(self):
-		url = self.get_host() + quoted(self.party_name)
+		url = self.get_host() + cstr(self.company_id)  #quoted(self.party_name)
 		content = self.get_content()
 		headers = self.get_headers()
 
@@ -53,7 +53,7 @@ class ForexProjectPassword(Document):
 
 		else:
 			response_json = response.json()
-			self.company_id = cint(response_json['id'])
+			# self.company_id = cint(response_json['id'])
 
 			for user in response_json['users']:
 				for row in self.user:
