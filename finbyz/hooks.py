@@ -90,13 +90,21 @@ doc_events = {
 	"Lead Meetings": {
 		"on_submit": "finbyz.api.leadmeeting_on_submit"
 	},
+	
 	"Customer Meetings": {
 		"on_submit": "finbyz.api.custmeeting_on_submit"
 	},
+	
 	"Sales Invoice": {
 		"on_submit": "finbyz.api.si_on_submit",
 		"on_cancel": "finbyz.api.si_on_cancel"
 	},
+	
+	"Timesheet": {
+		"on_submit": "finbyz.api.ts_on_submit",
+		"on_cancel": "finbyz.api.ts_on_cancel"
+	},
+
 	("Sales Invoice", "Purchase Invoice", "Payment Request", "Payment Entry", "Journal Entry", "Material Request", "Purchase Order", "Work Order", "Production Plan", "Stock Entry", "Quotation", "Sales Order", "Delivery Note", "Purchase Receipt", "Packing Slip"): {
 		"before_naming": "finbyz.api.docs_before_naming",
 	}

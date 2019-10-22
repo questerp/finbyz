@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 import frappe
 import datetime
 from frappe import sendmail, msgprint, db, _
-from frappe.utils import get_fullname, get_datetime, now_datetime, get_url_to_form, date_diff, add_days,add_months, getdate
+from frappe.utils import (
+	get_fullname, get_datetime, now_datetime, get_url_to_form, date_diff, add_days, add_months, getdate, cint, cstr)
 from frappe.core.doctype.communication.email import make
 from frappe.contacts.doctype.address.address import get_address_display, get_default_address
 from frappe.contacts.doctype.contact.contact import get_contact_details, get_default_contact
@@ -439,7 +440,19 @@ def asset_on_update_after_submit(self, method):
 			if not row.finance_book:
 				row.db_set('finance_book', d.finance_book)
 				row.db_set('finance_book_id', d.idx)
-				
+
+@frappe.whitelist()
+def ts_on_submit(self, method):
+	for row in self.time_logs:
+		if cint(row.completed):
+			frappe.db.set_value("Task", row.task, 'status', "Completed")
+
+@frappe.whitelist()
+def ts_on_cancel(self, method):
+	for row in self.time_logs:
+		if cint(row.completed):
+			frappe.db.set_value("Task", row.task, 'status', "Open")
+
 @frappe.whitelist()
 def docs_before_naming(self, method):
 	from erpnext.accounts.utils import get_fiscal_year
