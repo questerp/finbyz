@@ -12,6 +12,8 @@ from frappe.contacts.doctype.contact.contact import get_contact_details, get_def
 from frappe.utils.jinja import validate_template
 from frappe.model.mapper import get_mapped_doc
 from erpnext.accounts.utils import get_fiscal_year
+from frappe.core.doctype.communication.email import make
+from frappe.email.smtp import get_outgoing_email_account
 
 
 @frappe.whitelist()
@@ -468,3 +470,24 @@ def docs_before_naming(self, method):
 		fy_years = fy.split("-")
 		fiscal = fy_years[0][2:] + '-' + fy_years[1][2:]
 		self.fiscal = fiscal
+
+@frappe.whitelist()
+def send_lead_mail(recipients, person, email_template, doc_name):
+
+	doc = frappe.get_doc('Email Template',email_template)
+	context = {"person": person}
+	message = frappe.render_template(doc.response, context)
+	subject = doc.subject
+	email_account = get_outgoing_email_account(True, append_to = "Lead")
+	sender = email_account.default_sender
+
+	make(
+		recipients = recipients,
+		subject = subject,
+		content = message,
+		sender = sender,
+		doctype = "Lead",
+		name = doc_name,
+		send_email = True
+	)
+	return "Mail send successfully!"
