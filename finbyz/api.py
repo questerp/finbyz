@@ -474,10 +474,11 @@ def docs_before_naming(self, method):
 @frappe.whitelist()
 def send_lead_mail(recipients, person, email_template, doc_name):
 
-	doc = frappe.get_doc('Email Template',email_template)
-	context = {"person": person}
-	message = frappe.render_template(doc.response, context)
-	subject = doc.subject
+	template = frappe.get_doc('Email Template',email_template)
+	doc = frappe.get_doc('Lead',doc_name)
+	context = doc.as_dict()
+	message = frappe.render_template(template.response, context)
+	subject = template.subject
 	email_account = get_outgoing_email_account(True, append_to = "Lead")
 	sender = email_account.default_sender
 
