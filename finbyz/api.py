@@ -443,17 +443,19 @@ def asset_on_update_after_submit(self, method):
 				row.db_set('finance_book', d.finance_book)
 				row.db_set('finance_book_id', d.idx)
 
-@frappe.whitelist()
 def ts_on_submit(self, method):
 	for row in self.time_logs:
 		if cint(row.completed):
-			frappe.db.set_value("Task", row.task, 'status', "Completed")
+			doc = frappe.get_doc('Task', row.task)
+			doc.status = "Completed"
+			doc.save()
 
-@frappe.whitelist()
 def ts_on_cancel(self, method):
 	for row in self.time_logs:
 		if cint(row.completed):
-			frappe.db.set_value("Task", row.task, 'status', "Open")
+			doc = frappe.get_doc('Task', row.task)
+			doc.status = "Open"
+			doc.save()
 
 @frappe.whitelist()
 def docs_before_naming(self, method):
