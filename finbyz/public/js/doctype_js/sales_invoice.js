@@ -28,9 +28,4 @@ frappe.ui.form.on('Sales Invoice', {
 			frm.trigger('naming_series');
 		}
 	},
-	company_series: function(frm){
-		if (frm.doc.__islocal){
-			frm.trigger('naming_series');
-		}
-	}
 });
