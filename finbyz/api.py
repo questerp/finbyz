@@ -495,6 +495,11 @@ def send_lead_mail(recipients, person, email_template, doc_name):
     )
     return "Mail send successfully!"
 
+def check_sub(string, sub_str): 
+    if (string.find(sub_str) == -1): 
+       return False 
+    else: 
+        return True
 
 def naming_series_name(name):
     if check_sub(name, '.fiscal.'):
