@@ -32,6 +32,7 @@ app_license = "MIT"
 
 doctype_js = {
 	"Lead": "public/js/doctype_js/lead.js",
+	"Sales Invoice": "public/js/doctype_js/sales_invoice.js"
 }
 
 # Home Pages
