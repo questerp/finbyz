@@ -510,7 +510,7 @@ def naming_series_name(name):
     return name
 
 @frappe.whitelist()
-def check_counter_series(name = None, company_series = None):
+def check_counter_series(name = None):
     name = naming_series_name(name)
     
     check = frappe.db.get_value('Series', name, 'current', order_by="name")
