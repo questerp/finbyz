@@ -1,10 +1,5 @@
 frappe.ui.form.on('Sales Invoice', {
 	refresh: function(frm){
-		if (cur_frm.doc.company){
-			frappe.db.get_value("Company", cur_frm.doc.company, 'company_series',(r) => {
-				frm.set_value('company_series', r.company_series);
-			});
-		}
 		if (frm.doc.__islocal){
 			frm.trigger('naming_series');
 		}
