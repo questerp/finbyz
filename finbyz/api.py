@@ -525,7 +525,7 @@ def check_counter_series(name = None, company_series = None):
     if check == 0:
         return 1
     elif check == None:
-        frappe.db.sql(f"insert into tabSeries (name, current) values ('{name}', 0)")
+        frappe.db.sql("insert into tabSeries (name, current) values ('{}', 0)".format(name))
         return 1
     else:
         return int(frappe.db.get_value('Series', name, 'current', order_by="name")) + 1
@@ -541,6 +541,6 @@ def before_naming(self, test):
                 if check == 0:
                     pass
                 elif not check:
-                    frappe.db.sql(f"insert into tabSeries (name, current) values ('{name}', 0)")
+                    frappe.db.sql("insert into tabSeries (name, current) values ('{}', 0)".format(name))
                 
-                frappe.db.sql(f"update `tabSeries` set current = {int(self.series_value) - 1} where name = '{name}'")
+                frappe.db.sql("update `tabSeries` set current = {} where name = '{}'".format(int(self.series_value) - 1, name))
