@@ -494,3 +494,46 @@ def send_lead_mail(recipients, person, email_template, doc_name):
 		send_email = True
 	)
 	return "Mail send successfully!"
+
+
+def naming_series_name(name, company_series):
+    if check_sub(name, '.fiscal.'):
+        current_fiscal = frappe.db.get_value('Global Defaults', None, 'current_fiscal_year')
+        fiscal = frappe.db.get_value("Fiscal Year", str(current_fiscal),'fiscal')
+        name = name.replace('.fiscal.', str(fiscal))
+
+    if check_sub(name, '.YYYY.'):
+        name = name.replace('.2020.')
+
+    if company_series:
+        if check_sub(name, 'company_series.'):
+            name = name.replace('company_series.', str(company_series))
+
+@frappe.whitelist()
+def check_counter_series(name = None, company_series = None):
+    name = naming_series_name(name, company_series)
+    
+    check = frappe.db.get_value('Series', name, 'current', order_by="name")
+    
+    if check == 0:
+        return 1
+    elif check == None:
+        frappe.db.sql(f"insert into tabSeries (name, current) values ('{name}', 0)")
+        return 1
+    else:
+        return int(frappe.db.get_value('Series', name, 'current', order_by="name")) + 1
+
+@frappe.whitelist()
+def before_naming(self, test):
+    if not self.amended_from:
+        if self.series_value:
+            if self.series_value > 0:
+                name = naming_series_name(self.naming_series, self.company_series)
+                
+                check = frappe.db.get_value('Series', name, 'current', order_by="name")
+                if check == 0:
+                    pass
+                elif not check:
+                    frappe.db.sql(f"insert into tabSeries (name, current) values ('{name}', 0)")
+                
+                frappe.db.sql(f"update `tabSeries` set current = {int(self.series_value) - 1} where name = '{name}'")
