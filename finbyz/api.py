@@ -461,7 +461,7 @@ def ts_on_cancel(self, method):
 def docs_before_naming(self, method):
     from erpnext.accounts.utils import get_fiscal_year
 
-    date = self.get("transaction_date") or self.get("posting_date") or getdate()
+    date = self.get("posting_date") or self.get("transaction_date") or getdate()
 
     fy = get_fiscal_year(date)[0]
     fiscal = frappe.db.get_value("Fiscal Year", fy, 'fiscal')
