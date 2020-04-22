@@ -458,22 +458,6 @@ def ts_on_cancel(self, method):
             doc.save()
 
 @frappe.whitelist()
-def docs_before_naming(self, method):
-    from erpnext.accounts.utils import get_fiscal_year
-
-    date = self.get("posting_date") or self.get("transaction_date") or getdate()
-
-    fy = get_fiscal_year(date)[0]
-    fiscal = frappe.db.get_value("Fiscal Year", fy, 'fiscal')
-
-    if fiscal:
-        self.fiscal = fiscal
-    else:
-        fy_years = fy.split("-")
-        fiscal = fy_years[0][2:] + '-' + fy_years[1][2:]
-        self.fiscal = fiscal
-
-@frappe.whitelist()
 def send_lead_mail(recipients, person, email_template, doc_name):
 
     template = frappe.get_doc('Email Template',email_template)
@@ -501,23 +485,41 @@ def check_sub(string, sub_str):
     else: 
         return True
 
-def naming_series_name(name):
+
+@frappe.whitelist()
+def docs_before_naming(self, method):
+    from erpnext.accounts.utils import get_fiscal_year
+
+    date = self.get("posting_date") or self.get("transaction_date") or getdate()
+
+    fy = get_fiscal_year(date)[0]
+    fiscal = frappe.db.get_value("Fiscal Year", fy, 'fiscal')
+
+    if fiscal:
+        self.fiscal = fiscal
+    else:
+        fy_years = fy.split("-")
+        fiscal = fy_years[0][2:] + '-' + fy_years[1][2:]
+        self.fiscal = fiscal
+
+
+def naming_series_name(name,date):
     if check_sub(name, '.fiscal.'):
-        current_fiscal = frappe.db.get_value('Global Defaults', None, 'current_fiscal_year')
-        fiscal = frappe.db.get_value("Fiscal Year", str(current_fiscal),'fiscal')
+        from erpnext.accounts.utils import get_fiscal_year
+        fy = get_fiscal_year(date)[0]
+        fiscal = frappe.db.get_value("Fiscal Year", fy, 'fiscal')
         name = name.replace('.fiscal.', str(fiscal))
+
 
     if check_sub(name, ".#"):
         name = name.replace('#', '')
         if name[-1] == '.':
             name = name[:-1]
-    
     return name
 
 @frappe.whitelist()
-def check_counter_series(name = None):
-    name = naming_series_name(name)
-    
+def check_counter_series(name = None,date=None):
+    name = naming_series_name(name,date)
     check = frappe.db.get_value('Series', name, 'current', order_by="name")
     
     if check == 0:
@@ -530,15 +532,18 @@ def check_counter_series(name = None):
 
 @frappe.whitelist()
 def before_naming(self, test):
+    if not self.fiscal:
+        from erpnext.accounts.utils import get_fiscal_year
+        date = self.get("posting_date") or self.get("transaction_date") or getdate()
+        fy = get_fiscal_year(date)[0]
+        self.fiscal = frappe.db.get_value("Fiscal Year", fy, 'fiscal')
     if not self.amended_from:
         if self.series_value:
             if self.series_value > 0:
-                name = naming_series_name(self.naming_series)
-                
+                date = self.get("posting_date") or self.get("transaction_date") or getdate()
+                name = naming_series_name(self.naming_series,date)
                 check = frappe.db.get_value('Series', name, 'current', order_by="name")
-                if check == 0:
-                    pass
-                elif not check:
+                if not check:
                     frappe.db.sql("insert into tabSeries (name, current) values ('{}', 0)".format(name))
                 
                 frappe.db.sql("update `tabSeries` set current = {} where name = '{}'".format(int(self.series_value) - 1, name))
