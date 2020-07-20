@@ -109,14 +109,6 @@ doc_events = {
 		"on_submit": "finbyz.api.ts_on_submit",
 		"on_cancel": "finbyz.api.ts_on_cancel"
 	},
-
-	"Sales Invoice": {
-		"before_naming": "finbyz.api.before_naming",
-	},
-
-	("Purchase Invoice", "Payment Request", "Payment Entry", "Journal Entry", "Material Request", "Purchase Order", "Work Order", "Production Plan", "Stock Entry", "Quotation", "Sales Order", "Delivery Note", "Purchase Receipt", "Packing Slip","Expense Claim"): {
-		"before_naming": "finbyz.api.docs_before_naming",
-	}
 }
 
 
