@@ -18,18 +18,21 @@ def execute(filters=None):
 
 	
 def get_columns():
-	columns = [_("Lead") + ":Link/Lead:80",  
-				_("User") + ":Link/User:100",  
-				_("Date") + ":Date:120",
-				_("Caller") + "::110", 
-				_("Organization") + "::180", 
-				_("Person") + "::120", 
-				_("Comment") + ":data:400",  
-				_("Schedule") + ":Date:120",  
-				_("Source") + "::100", 
-				_("Status") + "::100", 
-				_("Mobile") + "::100", 
-				_("Phone") + "::100"
+	
+	columns = [
+		{"label": _("Lead"), "fieldname": "lead", "fieldtype": "Link", "options": "Lead", "width": 80},
+		{"label": _("User"), "fieldname": "user", "fieldtype": "Link", "options": "User", "width": 100},
+		{"label": _("Date"), "fieldname": "date", "fieldtype": "Date", "width": 120},
+		{"label": _("Caller"), "fieldname": "caller", "fieldtype": "Data", "width": 110},
+		{"label": _("Organization"), "fieldname": "organization", "fieldtype": "Data", "width": 110},
+		{"label": _("Person"), "fieldname": "person", "fieldtype": "Data", "width": 110},
+		{"label": _("Comment"), "fieldname": "comment", "fieldtype": "Data", "width": 400},
+		{"label": _("Schedule"), "fieldname": "schedule", "fieldtype": "Date", "width": 120},
+		{"label": _("Person"), "fieldname": "person", "fieldtype": "Data", "width": 110},
+		{"label": _("Source"), "fieldname": "source", "fieldtype": "Data", "width": 110},
+		{"label": _("Status"), "fieldname": "status", "fieldtype": "Data", "width": 110},
+		{"label": _("Mobile"), "fieldname": "mobile", "fieldtype": "Data", "width": 110},
+		{"label": _("Phone"), "fieldname": "phone", "fieldtype": "Data", "width": 110}
 	]
 	return columns
 
@@ -43,7 +46,7 @@ def get_data(filters):
 	
 	data = frappe.db.sql("""
 		select
-			co.reference_name as "Lead", co.owner as "User" , co.creation as "Date", co.comment_by as "Caller", ld.company_name as "Organization", ld.lead_name as "Person",  co.content as "Comment", co.comment_email, ld.contact_date as "Schedule", ld.source as "Source" , ld.Status as "Status" , ld.mobile_no as "Mobile" ,	ld.phone as "Phone"
+			co.reference_name as "lead", co.owner as "user" , co.creation as "date", co.comment_by as "caller", ld.company_name as "organization", ld.lead_name as "person",  co.content as "comment", co.comment_email, ld.contact_date as "schedule", ld.source as "source" , ld.Status as "status" , ld.mobile_no as "mobile" ,	ld.phone as "phone"
 		from
 			`tabComment` as co left join `tabLead` as ld on (co.reference_name = ld.name)
 		where
@@ -53,8 +56,8 @@ def get_data(filters):
 			co.creation desc"""%where_clause, as_dict=1)
 
 	for row in data:
-		if not row["Caller"]:
-			row["Caller"] = get_fullname(row['comment_email'])
+		if not row["caller"]:
+			row["caller"] = get_fullname(row['comment_email'])
 
 	return data
 
@@ -81,7 +84,7 @@ def get_chart_data(data, filters):
 			cnt = 0
 			date = from_date + datetime.timedelta(days=d)
 			for row in data:
-				sql_date = getdate(row["Date"])
+				sql_date = getdate(row["date"])
 				if date == sql_date:
 					cnt += 1
 			
@@ -102,7 +105,7 @@ def get_chart_data(data, filters):
 			cnt = 0
 			for date in values:
 				for row in data:
-					sql_date = getdate(row["Date"])
+					sql_date = getdate(row["date"])
 					if date == sql_date:
 						cnt += 1
 						
