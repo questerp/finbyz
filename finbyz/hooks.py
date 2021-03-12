@@ -11,6 +11,12 @@ app_color = "FF5733"
 app_email = "info@finbyz.com"
 app_license = "MIT"
 
+
+
+# override for cc_field
+from frappe.email.doctype.notification.notification import Notification
+from finbyz.api import get_list_of_recipients
+Notification.get_list_of_recipients = get_list_of_recipients
 # Includes in <head>
 # ------------------
 
