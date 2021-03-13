@@ -701,8 +701,7 @@ def send_sales_order_mails():
 				cc = cc,
 				subject = 'Overdue Payment: ' + customer,
 				sender = sender,
-				message = message,
-				attachments = attachments
+				message = message
 			)
 			
 			# cnt += 1
