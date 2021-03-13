@@ -542,7 +542,7 @@ def get_list_of_recipients(self, doc, context):
 def sales_order_payment_remainder():
 	# mail on every tuesday
 	if getdate().weekday() == 1:
-		enqueue(send_sales_order_mails, queue='long', timeout=5000, job_name='Payment Reminder Mails')
+		frappe.enqueue(send_sales_order_mails, queue='long', timeout=5000, job_name='Payment Reminder Mails')
 		return "Payment Reminder Mails Send"
 
 @frappe.whitelist()
@@ -665,7 +665,7 @@ def send_sales_order_mails():
 
 	sender = formataddr(("FinByz Tech Pvt. Ltd.", "info@finbyz.com"))
 	for customer in customers:
-		attachments, outstanding, actual_amount, recipients, cc = [], [], [], [], ['accounts@finbyz.tech']
+		attachments, outstanding, actual_amount, recipients, cc = [], [], [], [], 'accounts@finbyz.tech'
 		table = ''
 
 		# customer_si = [d for d in data if d.customer == customer]
@@ -689,19 +689,19 @@ def send_sales_order_mails():
 
 			if bool(si.contact_email) and si.contact_email not in recipients:
 				recipients.append(si.contact_email)
-				cc.append(si.owner)
+				cc = cc + si.owner
 
 		message = header(customer) + '' + table + '' + footer(actual_amount, outstanding)
 		test_recipient  = ['nirali.satapara@finbyz.tech']
 
 		try:
-			frappe.sendmail(recipients=test_recipient,
-			# frappe.sendmail(
-			# 	recipients=recipients,
-				cc = cc,
-				subject = 'Overdue Payment: ' + customer,
+			make(recipients=test_recipient,
 				sender = sender,
-				message = message
+				subject = 'Overdue Payment: ' + customer,
+				content = message,
+				attachments = attachments,
+				cc = (cc),
+				send_email=True
 			)
 			
 			# cnt += 1
