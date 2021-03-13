@@ -692,10 +692,10 @@ def send_sales_order_mails():
 				cc.append(si.owner)
 
 		message = header(customer) + '' + table + '' + footer(actual_amount, outstanding)
-		message += "<br><br>Recipients: " + ','.join(recipients)
-		
+		test_recipient  = ['nirali.satapara@finbyz.tech']
+
 		try:
-			frappe.sendmail(recipients='nirali.satapara@finbyz.tech',
+			frappe.sendmail(recipients=test_recipient,
 			# frappe.sendmail(
 			# 	recipients=recipients,
 				cc = cc,
