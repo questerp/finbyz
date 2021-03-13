@@ -116,7 +116,11 @@ doc_events = {
 		"on_cancel": "finbyz.api.ts_on_cancel"
 	},
 }
-
+scheduler_events = {
+	"daily": [
+		"finbyz.api.sales_order_payment_remainder"
+	],
+}
 
 # Scheduled Tasks
 # ---------------

@@ -536,3 +536,178 @@ def get_list_of_recipients(self, doc, context):
 	if not recipients and not cc and not bcc:
 		return None, None, None
 	return list(set(recipients)), list(set(cc)), list(set(bcc))
+
+@frappe.whitelist()
+def sales_order_payment_remainder():
+	# mail on every tuesday
+	if getdate().weekday() == 1:
+		enqueue(send_sales_order_mails, queue='long', timeout=5000, job_name='Payment Reminder Mails')
+		return "Payment Reminder Mails Send"
+
+@frappe.whitelist()
+def send_sales_order_mails():
+	from frappe.utils import fmt_money
+
+	# def show_progress(status, customer, invoice):
+	# 	frappe.publish_realtime(event="cities_progress", message={'status': status, 'customer': customer, 'invoice': invoice}, user=frappe.session.user)
+
+	def header(customer):
+		return """<strong>""" + customer + """</strong><br><br>Dear Sir,<br><br>
+		
+		We wish to invite your kind immediate attention to our following invoices which are unpaid till date and are overdue for payment.<br>
+		<div align="center">
+			<table border="1" cellspacing="0" cellpadding="0" width="100%">
+				<thead>
+					<tr>
+						<th width="20%" valign="top">Proforma No</th>
+						<th width="20%" valign="top">Proforma Date</th>
+						<th width="20%" valign="top">Total Amt</th>
+						<th width="20%" valign="top">Outstanding Amt</th>
+					</tr></thead><tbody>"""
+
+	def table_content(name, transaction_date, rounded_total, outstanding_amount):
+		transaction_date = transaction_date.strftime("%d-%m-%Y") if bool(transaction_date) else '-'
+		
+		rounded_total = fmt_money(rounded_total, 2, 'INR')
+		outstanding_amount = fmt_money(outstanding_amount, 2, 'INR')
+
+		return """<tr>
+				<td width="20%" valign="top"> {0} </td>
+				<td width="20%" valign="top"> {1} </td>
+				<td width="20%" valign="top"> {2} </td>
+				<td width="20%" valign="top"> {3} </td>
+			</tr>""".format(name, transaction_date, rounded_total, outstanding_amount)
+	
+	def footer(actual_amount, outstanding_amount):
+		actual_amt = fmt_money(sum(actual_amount), 2, 'INR')
+		outstanding_amt = fmt_money(sum(outstanding_amount), 2, 'INR')
+		return """<tr>
+					<td width="68%" colspan="2" valign="top" align="right">
+						<strong>Net Receivable &nbsp; </strong>
+					</td>
+					<td align="right" width="13%" valign="top">
+						<strong> {} </strong>
+					</td>
+					<td align="right" width="18%" valign="top">
+						<strong> {} </strong>
+					</td>
+				</tr></tbody></table></div><br>
+				Request you to look into the matter and release the payment without any Further delay. <br><br>
+				If you need any clarifications for any of above proforma invoice, please reach out to our Accounts Team by sending email to accounts@finbyz.tech or call Mr. Ravin Ramoliya (+91 8200899005).<br><br>
+				We will appreciate your immediate response in this regard.<br><br>
+				<span style="background-color: rgb(255, 255, 0);">If payment already made from your end, kindly provide details of the payment/s made to enable us to reconcile and credit your account.</span><br><br>
+				
+				<div>
+				<table cellpadding="4px" cellspacing="0" style="background: none; margin: 0; padding: 0px;">
+					<tbody><tr>
+						<td style="padding-bottom: 0px; border-right: 3px solid #a0ce4e;" valign="top"><img id="preview-image-url" src="https://drive.google.com/uc?id=0B3eTCgrrV-DDTVFIbTJsSmhYWTQ"></td>
+						<td style="padding-top: 0; padding-bottom: 0; padding-left: 12px; padding-right: 0;">
+							<table border="0" cellpadding="4px" cellspacing="0" style="background: none; border-width: 0px; border: 0px; margin: 0; padding: 1px;">
+								<tbody><tr>
+									<td colspan="2" style="padding-bottom: 2px; color: #a0ce4e; font-size: 18px; font-family: Arial, Helvetica, sans-serif;">Accounts Team</td>
+								</tr>
+								<tr>
+									<td colspan="2" style="padding-bottom: 0px; color: #333333; font-size: 14px; font-family: Arial, Helvetica, sans-serif;"><strong>FinByz Tech Pvt. Ltd.</strong></td>
+								</tr>
+								<tr>
+									<td style="padding-bottom: 0px; vertical-align: top; width: 20px; color: #a0ce4e; font-size: 14px; font-family: Arial, Helvetica, sans-serif;" valign="top" width="20">P:</td>
+									<td style="padding-bottom: 0px; color: #333333; font-size: 14px; font-family: Arial, Helvetica, sans-serif;">+91-79-48912428</td>
+								</tr>
+								<tr>
+									<td style="padding-bottom: 0px; vertical-align: top; width: 20px; color: #a0ce4e; font-size: 14px; font-family: Arial, Helvetica, sans-serif;" valign="top" width="20">A:</td>
+									<td style="padding-bottom: 0px; vertical-align: top; color: #333333; font-size: 14px; font-family: Arial, Helvetica, sans-serif;" valign="top">504- Addor Ambition, Navrang Circle, Navrangpura, Ahmedabad -380014</td>
+								</tr>
+								<tr>
+									<td style="padding-bottom: 0px; vertical-align: top; width: 20px; color: #a0ce4e; font-size: 14px; font-family: Arial, Helvetica, sans-serif;" valign="top" width="20">W:</td>
+									<td style="padding-bottom: 0px; vertical-align: top; color: #333333; font-size: 14px; font-family: Arial, Helvetica, sans-serif;" valign="top">
+										<a href="https://finbyz.tech" style="color: #1D9FDB; text-decoration: none; font-weight: normal; font-size: 14px;">Finbyz.tech</a>  <span style="color: #a0ce4e;">E: </span><a href="mailto:accounts@finbyz.tech" style="color: #1D9FDB; text-decoration: none; font-weight: normal; font-size: 14px;">accounts@finbyz.tech</a>
+									</td>
+								</tr>
+							</tbody></table>
+						</td>
+					</tr>
+				</tbody></table>
+				<p></p>
+				<div align="center" style="color: rgb(34, 34, 34); margin: 0cm 0cm 0.0001pt; font-size: 11pt; font-family: Calibri, sans-serif; text-align: center; line-height: 12.65pt;">
+					<hr align="center" size="2" width="100%">
+				</div>
+				<p style="color: rgb(34, 34, 34); margin: 0cm 0cm 0.0001pt; font-size: 11pt; font-family: Calibri, sans-serif; line-height: 12.65pt;"><a href="https://www.facebook.com/finbyz" style="color: rgb(17, 85, 204);" target="_blank"><span style="color: blue;"><img alt="Facebook" border="0" height="32" src="https://docs.google.com/a/finbyz.com/uc?id=0B3eTCgrrV-DDVjJvcXRscHBtLUE&amp;export=download" width="32"></span></a>  <a href="https://www.google.co.in/+finbyz" style="color: rgb(17, 85, 204);" target="_blank"><span style="color: blue;"><img alt="Google+" border="0" height="32" src="https://docs.google.com/a/finbyz.com/uc?id=0B3eTCgrrV-DDVHExNXR3VUxKaGs&amp;export=download" width="32"></span></a>  <a href="https://www.linkedin.com/company/finbyz" style="color: rgb(17, 85, 204);" target="_blank"><span style="color: blue;"><img alt="Linkedin" border="0" height="32" src="https://docs.google.com/a/finbyz.com/uc?id=0B3eTCgrrV-DDRGdHUExsbjVRR2s&amp;export=download" width="32"></span></a>  <a href="https://twitter.com/Finbyz" style="color: rgb(17, 85, 204);" target="_blank"><span style="color: blue;"><img alt="Twitter" border="0" height="32" src="https://docs.google.com/a/finbyz.com/uc?id=0B3eTCgrrV-DDTS1KRndoZnBXc1U&amp;export=download" width="32"></span></a></p>
+			</div>
+				
+				""".format(actual_amt, outstanding_amt)
+
+	non_customers = ()
+
+	data = frappe.get_list("Sales Order", filters={
+			'status': ['in', ('To Deliver and Bill')],
+			'currency': 'INR',
+			'docstatus': 1,
+			'dont_send_payment_reminder': 0,
+			'customer': ['not in', non_customers]},
+			order_by='transaction_date',
+			fields=["name", "customer", "transaction_date", "rounded_total", "advance_paid", "contact_email", "naming_series"])
+
+	def get_customers():
+		customers_list = list(set([d.customer for d in data if d.customer]))
+		customers_list.sort()
+
+		for customer in customers_list:
+			yield customer
+
+	def get_customer_si(customer):
+		for d in data:
+			if d.customer == customer:
+				yield d
+
+	cnt = 0
+	customers = get_customers()
+
+	sender = formataddr(("FinByz Tech Pvt. Ltd.", "info@finbyz.com"))
+	for customer in customers:
+		attachments, outstanding, actual_amount, recipients = [], [], [], []
+		table = ''
+
+		# customer_si = [d for d in data if d.customer == customer]
+		customer_si = get_customer_si(customer)
+
+		for si in customer_si:
+			show_progress('In Progress', customer, si.name)
+			name = "Previous Year Outstanding"
+			if si.naming_series != "OSINV-":
+				name = si.name
+				try:
+					attachments.append(frappe.attach_print('Sales Order', si.name, print_format="Pro-Forma Invoice", print_letterhead=True))
+				except:
+					pass
+
+			table += table_content(name, si.transaction_date,
+						si.rounded_total, (si.rounded_total-si.advance_paid))
+
+			outstanding.append((si.rounded_total-si.advance_paid))
+			actual_amount.append(si.rounded_total or 0.0)
+
+			if bool(si.contact_email) and si.contact_email not in recipients:
+				recipients.append(si.contact_email)
+
+		message = header(customer) + '' + table + '' + footer(actual_amount, outstanding)
+		message += "<br><br>Recipients: " + ','.join(recipients)
+		
+		try:
+			frappe.sendmail(recipients='nirali.satapara@finbyz.tech',
+			# frappe.sendmail(
+			# 	recipients=recipients,
+				cc = 'accounts@finbyz.tech',
+				subject = 'Overdue Payment: ' + customer,
+				sender = sender,
+				message = message,
+				attachments = attachments
+			)
+			
+			cnt += 1
+			show_progress('Mail Sent', customer, "All")
+		except:
+			frappe.log_error("Mail Sending Issue", frappe.get_traceback())
+			continue
+
+	#show_progress('Success', "All Mails Sent", str(cnt))
+	#frappe.db.set_value("Cities", "CITY0001", "total", cnt)
