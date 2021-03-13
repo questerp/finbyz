@@ -11,6 +11,7 @@ from frappe.contacts.doctype.address.address import get_address_display, get_def
 from frappe.contacts.doctype.contact.contact import get_contact_details, get_default_contact
 from frappe.utils.jinja import validate_template
 from frappe.model.mapper import get_mapped_doc
+from email.utils import formataddr
 from erpnext.accounts.utils import get_fiscal_year
 from frappe.core.doctype.communication.email import make
 from frappe.email.smtp import get_outgoing_email_account
@@ -671,7 +672,7 @@ def send_sales_order_mails():
 		customer_si = get_customer_si(customer)
 
 		for si in customer_si:
-			show_progress('In Progress', customer, si.name)
+			# show_progress('In Progress', customer, si.name)
 			name = "Previous Year Outstanding"
 			if si.naming_series != "OSINV-":
 				name = si.name
@@ -703,8 +704,8 @@ def send_sales_order_mails():
 				attachments = attachments
 			)
 			
-			cnt += 1
-			show_progress('Mail Sent', customer, "All")
+			# cnt += 1
+			# show_progress('Mail Sent', customer, "All")
 		except:
 			frappe.log_error("Mail Sending Issue", frappe.get_traceback())
 			continue
