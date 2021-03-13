@@ -560,10 +560,10 @@ def send_sales_order_mails():
 			<table border="1" cellspacing="0" cellpadding="0" width="100%">
 				<thead>
 					<tr>
-						<th width="20%" valign="top">Proforma No</th>
-						<th width="20%" valign="top">Proforma Date</th>
-						<th width="20%" valign="top">Total Amt</th>
-						<th width="20%" valign="top">Outstanding Amt</th>
+						<th width="25%" valign="top">Proforma No</th>
+						<th width="25%" valign="top">Proforma Date</th>
+						<th width="25%" valign="top">Total Amount</th>
+						<th width="25%" valign="top">Outstanding Amount</th>
 					</tr></thead><tbody>"""
 
 	def table_content(name, transaction_date, rounded_total, outstanding_amount):
@@ -573,30 +573,30 @@ def send_sales_order_mails():
 		outstanding_amount = fmt_money(outstanding_amount, 2, 'INR')
 
 		return """<tr>
-				<td width="20%" valign="top"> {0} </td>
-				<td width="20%" valign="top"> {1} </td>
-				<td width="20%" valign="top"> {2} </td>
-				<td width="20%" valign="top"> {3} </td>
+				<td width="25%" valign="top" align="center"> {0} </td>
+				<td width="25%" valign="top" align="center"> {1} </td>
+				<td width="25%" valign="top" align="right"> {2} </td>
+				<td width="25%" valign="top" align="right"> {3} </td>
 			</tr>""".format(name, transaction_date, rounded_total, outstanding_amount)
 	
 	def footer(actual_amount, outstanding_amount):
 		actual_amt = fmt_money(sum(actual_amount), 2, 'INR')
 		outstanding_amt = fmt_money(sum(outstanding_amount), 2, 'INR')
 		return """<tr>
-					<td width="68%" colspan="2" valign="top" align="right">
+					<td width="50%" colspan="2" valign="top" align="right">
 						<strong>Net Receivable &nbsp; </strong>
 					</td>
-					<td align="right" width="13%" valign="top">
+					<td align="right" width="25%" valign="top">
 						<strong> {} </strong>
 					</td>
-					<td align="right" width="18%" valign="top">
+					<td align="right" width="25%" valign="top">
 						<strong> {} </strong>
 					</td>
 				</tr></tbody></table></div><br>
-				Request you to look into the matter and release the payment without any Further delay. <br><br>
+				Request you to release the payment at earliest. <br><br>
 				If you need any clarifications for any of above proforma invoice, please reach out to our Accounts Team by sending email to accounts@finbyz.tech or call Mr. Ravin Ramoliya (+91 8200899005).<br><br>
 				We will appreciate your immediate response in this regard.<br><br>
-				<span style="background-color: rgb(255, 255, 0);">If payment already made from your end, kindly provide details of the payment/s made to enable us to reconcile and credit your account.</span><br><br>
+				If payment already made from your end, kindly provide details of the payment/s made to enable us to reconcile and credit your account.<br><br>
 				
 				<div>
 				<table cellpadding="4px" cellspacing="0" style="background: none; margin: 0; padding: 0px;">
@@ -646,7 +646,7 @@ def send_sales_order_mails():
 			'dont_send_payment_reminder': 0,
 			'customer': ['not in', non_customers]},
 			order_by='transaction_date',
-			fields=["name", "customer", "transaction_date", "rounded_total", "advance_paid", "contact_email", "naming_series"])
+			fields=["name", "customer", "transaction_date", "rounded_total", "advance_paid", "contact_email", "naming_series","owner"])
 
 	def get_customers():
 		customers_list = list(set([d.customer for d in data if d.customer]))
@@ -665,7 +665,7 @@ def send_sales_order_mails():
 
 	sender = formataddr(("FinByz Tech Pvt. Ltd.", "info@finbyz.com"))
 	for customer in customers:
-		attachments, outstanding, actual_amount, recipients = [], [], [], []
+		attachments, outstanding, actual_amount, recipients, cc = [], [], [], [], ['accounts@finbyz.tech']
 		table = ''
 
 		# customer_si = [d for d in data if d.customer == customer]
@@ -689,6 +689,7 @@ def send_sales_order_mails():
 
 			if bool(si.contact_email) and si.contact_email not in recipients:
 				recipients.append(si.contact_email)
+				cc.append(si.owner)
 
 		message = header(customer) + '' + table + '' + footer(actual_amount, outstanding)
 		message += "<br><br>Recipients: " + ','.join(recipients)
@@ -697,7 +698,7 @@ def send_sales_order_mails():
 			frappe.sendmail(recipients='nirali.satapara@finbyz.tech',
 			# frappe.sendmail(
 			# 	recipients=recipients,
-				cc = 'accounts@finbyz.tech',
+				cc = cc,
 				subject = 'Overdue Payment: ' + customer,
 				sender = sender,
 				message = message,
