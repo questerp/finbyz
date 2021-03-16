@@ -677,7 +677,14 @@ def send_sales_order_mails():
 			if si.naming_series != "OSINV-":
 				name = si.name
 				try:
-					attachments.append(frappe.attach_print('Sales Order', si.name, print_format="Pro-Forma Invoice", print_letterhead=True))
+					attachments.append({
+						"print_format_attachment": 1,
+						"doctype": "Sales Order",
+						"name": si.name,
+						"print_format": 'Pro-Forma Invoice',
+						"print_letterhead": 1,
+						"lang": 'en'
+					})
 				except:
 					pass
 
