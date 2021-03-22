@@ -699,10 +699,10 @@ def send_sales_order_mails():
 				cc = cc + si.owner
 
 		message = header(customer) + '' + table + '' + footer(actual_amount, outstanding)
-		test_recipient  = ['nirali.satapara@finbyz.tech']
+		#test_recipient  = ['nirali.satapara@finbyz.tech']
 
 		try:
-			make(recipients=test_recipient,
+			make(recipients=recipients,
 				sender = sender,
 				subject = 'Overdue Payment: ' + customer,
 				content = message,
