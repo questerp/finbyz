@@ -696,7 +696,7 @@ def send_sales_order_mails():
 
 			if bool(si.contact_email) and si.contact_email not in recipients:
 				recipients.append(si.contact_email)
-				cc = cc + si.owner
+				cc = cc + ', ' + si.owner
 
 		message = header(customer) + '' + table + '' + footer(actual_amount, outstanding)
 		#test_recipient  = ['nirali.satapara@finbyz.tech']
