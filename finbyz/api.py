@@ -88,8 +88,8 @@ def send_minutes(doc_name):
 	
 	subject = "Minutes of the Meeting on Date - {0}".format(get_datetime(doc.meeting_from).strftime("%A %d-%b-%Y"))
 	
-	representatives = [row.emp_user_id for row in doc.finbyz_representatives]
-	representatives += [row.email_id for row in doc.lead_representatives]
+	representatives = [row.emp_user_id for row in doc.meeting_company_representative]
+	representatives += [row.email_id for row in doc.meeting_party_representative]
 	
 	recipients = ",".join(representatives)
 	
@@ -719,3 +719,7 @@ def send_sales_order_mails():
 
 	#show_progress('Success', "All Mails Sent", str(cnt))
 	#frappe.db.set_value("Cities", "CITY0001", "total", cnt)
+
+def opportunity_validate(self,method):
+	if self.opportunity_amount and self.probability:
+		self.opportunity_size = self.opportunity_amount * self.probability / 100
