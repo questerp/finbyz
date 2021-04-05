@@ -98,6 +98,10 @@ doctype_js = {
 # }
 
 doc_events = {
+	"Opportunity":{
+		"validate":"finbyz.api.opportunity_validate"
+	},
+
 	"Lead Meetings": {
 		"on_submit": "finbyz.api.leadmeeting_on_submit"
 	},
