@@ -560,36 +560,39 @@ def send_sales_order_mails():
 			<table border="1" cellspacing="0" cellpadding="0" width="100%">
 				<thead>
 					<tr>
-						<th width="25%" valign="top">Proforma No</th>
-						<th width="25%" valign="top">Proforma Date</th>
-						<th width="25%" valign="top">Total Amount</th>
-						<th width="25%" valign="top">Outstanding Amount</th>
+						<th width="20%" valign="top">Proforma No</th>
+						<th width="20%" valign="top">Proforma Date</th>
+						<th width="20%" valign="top">Net Total</th>
+						<th width="20%" valign="top">Total Amount</th>
+						<th width="20%" valign="top">Outstanding Amount</th>
 					</tr></thead><tbody>"""
 
-	def table_content(name, transaction_date, rounded_total, outstanding_amount):
+	def table_content(name, transaction_date, net_total, rounded_total, outstanding_amount):
 		transaction_date = transaction_date.strftime("%d-%m-%Y") if bool(transaction_date) else '-'
 		
 		rounded_total = fmt_money(rounded_total, 2, 'INR')
+		net_total = fmt_money(net_total, 2, 'INR')
 		outstanding_amount = fmt_money(outstanding_amount, 2, 'INR')
 
 		return """<tr>
-				<td width="25%" valign="top" align="center"> {0} </td>
-				<td width="25%" valign="top" align="center"> {1} </td>
-				<td width="25%" valign="top" align="right"> {2} </td>
-				<td width="25%" valign="top" align="right"> {3} </td>
-			</tr>""".format(name, transaction_date, rounded_total, outstanding_amount)
+				<td width="20%" valign="top" align="center"> {0} </td>
+				<td width="20%" valign="top" align="center"> {1} </td>
+				<td width="20%" valign="top" align="center"> {2} </td>
+				<td width="20%" valign="top" align="right"> {3} </td>
+				<td width="20%" valign="top" align="right"> {4} </td>
+			</tr>""".format(name, transaction_date, net_total, rounded_total, outstanding_amount)
 	
 	def footer(actual_amount, outstanding_amount):
 		actual_amt = fmt_money(sum(actual_amount), 2, 'INR')
 		outstanding_amt = fmt_money(sum(outstanding_amount), 2, 'INR')
 		return """<tr>
-					<td width="50%" colspan="2" valign="top" align="right">
+					<td width="60%" colspan="3" valign="top" align="right">
 						<strong>Net Receivable &nbsp; </strong>
 					</td>
-					<td align="right" width="25%" valign="top">
+					<td align="right" width="20%" valign="top">
 						<strong> {} </strong>
 					</td>
-					<td align="right" width="25%" valign="top">
+					<td align="right" width="20%" valign="top">
 						<strong> {} </strong>
 					</td>
 				</tr></tbody></table></div><br>
@@ -646,7 +649,7 @@ def send_sales_order_mails():
 			'dont_send_payment_reminder': 0,
 			'customer': ['not in', non_customers]},
 			order_by='transaction_date',
-			fields=["name", "customer", "transaction_date", "rounded_total", "advance_paid", "contact_email", "naming_series","owner"])
+			fields=["name", "customer", "transaction_date","net_total", "rounded_total", "advance_paid", "contact_email", "naming_series","owner"])
 
 	def get_customers():
 		customers_list = list(set([d.customer for d in data if d.customer]))
@@ -688,7 +691,7 @@ def send_sales_order_mails():
 				except:
 					pass
 
-			table += table_content(name, si.transaction_date,
+			table += table_content(name, si.transaction_date, si.net_total,
 						si.rounded_total, (si.rounded_total-si.advance_paid))
 
 			outstanding.append((si.rounded_total-si.advance_paid))
@@ -699,10 +702,10 @@ def send_sales_order_mails():
 				cc = cc + ', ' + si.owner
 
 		message = header(customer) + '' + table + '' + footer(actual_amount, outstanding)
-		#test_recipient  = ['nirali.satapara@finbyz.tech']
+		recipient  = ['nirali.satapara@finbyz.tech']
 
 		try:
-			make(recipients=recipients,
+			make(recipients=recipient,
 				sender = sender,
 				subject = 'Overdue Payment: ' + customer,
 				content = message,
