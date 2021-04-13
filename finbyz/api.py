@@ -15,15 +15,6 @@ from email.utils import formataddr
 from erpnext.accounts.utils import get_fiscal_year
 from frappe.core.doctype.communication.email import make
 from frappe.email.smtp import get_outgoing_email_account
-
-
-@frappe.whitelist()
-def leadmeeting_on_submit(self, method):
-	new_comm(self, method)
-
-@frappe.whitelist()	
-def custmeeting_on_submit(self, method):
-	new_communication(self, method)
 	
 @frappe.whitelist()	
 def si_on_submit(self, method):
@@ -166,59 +157,7 @@ def request_for_quote(doc_name):
 
 	sales_partner = ",".join(sales_partner)
 	frappe.msgprint(_("Email sent to {0}".format(sales_partner)))
-	
-	
-#Update Lead Comments on Submit
-def new_comm(self, method):
-	user_name = frappe.db.get_value("Employee",{"user_id":frappe.session.user},"employee_name")
-	url = get_url_to_form("Lead Meetings", self.name)
-	# url = "http://erp.finbyz.in/desk#Form/Lead%20Meetings/" + self.name
-	discussed = "<strong><a href="+url+">"+self.name+"</a>: </strong>"+ user_name + " Met "+ self.contact_person + " On "+ self.meeting_from +"<br>" + self.discussion.replace('\n', "<br>")
-	cm = frappe.new_doc("Comment")
-	cm.subject = self.name
-	cm.comment_type = "Comment"
-	cm.content = discussed
-	cm.reference_doctype = self.party_type
-	cm.reference_name = self.party
-	cm.comment_email = frappe.session.user
-	cm.comment_by = user_name
-	cm.save(ignore_permissions=True)
-	if self.party_type == "Lead":
-		target_lead = frappe.get_doc("Lead", self.party)
-		target_lead.status = "Meeting Done"
-		target_lead.turnover = self.turnover
-		target_lead.industry = self.industry
-		target_lead.business_specifics = self.business_specifics
-		target_lead.contact_by = self.contact_by
-		target_lead.contact_date = self.contact_date
-		if not target_lead.email_id:
-			target_lead.email_id = self.email_id
-		if not target_lead.lead_name:
-			target_lead.lead_name = self.contact_person
-		if not target_lead.mobile_no:
-			target_lead.mobile_no = self.mobile_no
-		target_lead.save(ignore_permissions=True)
-	frappe.db.commit()
-	
-#Update Customer Comments on Submit
-def new_communication(self, method):
-	url = "http://erp.finbyz.in/desk#Form/Customer%20Meetings/" + self.name
-	msgprint(url)
-	if self.actionables:
-		discussed = "<strong><a href="+url+">"+self.name+"</a>: </strong>"+ "Met "+ self.contact_person + " On "+ self.meeting_from +"<br>" + self.discussion.replace('\n', "<br>")+ "<br><strong>Actionable:</strong>" +self.actionables
-	else:
-		discussed = "<strong><a href="+url+">"+self.name+"</a>: </strong>"+ "Met "+ self.contact_person + " On "+ self.meeting_from +"<br>" + self.discussion.replace('\n', "<br>")
-	msgprint(discussed)
-	cm = frappe.new_doc("Communication")
-	cm.subject = self.name
-	cm.communication_type = "Comment"
-	cm.comment_type = "Comment"
-	cm.content = self.discussed
-	cm.reference_doctype = "Customer"
-	cm.reference_name = self.customer
-	cm.save(ignore_permissions=True)
-	frappe.db.commit()
-	
+		
 #Update  Comments on Submit
 def tradetx(self, method):
 	for row in self.items:
@@ -541,7 +480,7 @@ def get_list_of_recipients(self, doc, context):
 @frappe.whitelist()
 def sales_order_payment_remainder():
 	# mail on every tuesday
-	if getdate().weekday() == 1:
+	if getdate().weekday() == 2:
 		frappe.enqueue(send_sales_order_mails, queue='long', timeout=5000, job_name='Payment Reminder Mails')
 		return "Payment Reminder Mails Send"
 
@@ -702,10 +641,10 @@ def send_sales_order_mails():
 				cc = cc + ', ' + si.owner
 
 		message = header(customer) + '' + table + '' + footer(actual_amount, outstanding)
-		recipient  = ['nirali.satapara@finbyz.tech']
+		#recipient  = ['nirali.satapara@finbyz.tech']
 		
 		try:
-			make(recipients=recipient,
+			make(recipients=recipients,
 				sender = sender,
 				subject = 'Overdue Payment: ' + customer,
 				content = message,
