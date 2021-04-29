@@ -7,13 +7,13 @@
  "doctype": "Report",
  "idx": 0,
  "is_standard": "Yes",
- "modified": "2021-04-29 10:08:44.655211",
- "modified_by": "Administrator",
+ "modified": "2021-04-29 10:28:07.295417",
+ "modified_by": "mukesh@finbyz.tech",
  "module": "Finbyz",
  "name": "Sales Comments",
  "owner": "Administrator",
  "prepared_report": 0,
- "ref_doctype": "Communication",
+ "ref_doctype": "Lead",
  "report_name": "Sales Comments",
  "report_type": "Script Report",
  "roles": [
@@ -21,7 +21,10 @@
    "role": "System Manager"
   },
   {
-   "role": "All"
+   "role": "Sales User"
+  },
+  {
+   "role": "Sales Manager"
   }
  ]
 }
