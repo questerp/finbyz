@@ -38,7 +38,8 @@ Notification.get_list_of_recipients = get_list_of_recipients
 
 doctype_js = {
 	"Lead": "public/js/doctype_js/lead.js",
-	"Sales Invoice": "public/js/doctype_js/sales_invoice.js"
+	"Sales Invoice": "public/js/doctype_js/sales_invoice.js",
+	"Issue":"public/js/doctype_js/issue.js"
 }
 
 # Home Pages

@@ -161,7 +161,7 @@ def request_for_quote(doc_name):
 #Update  Comments on Submit
 def tradetx(self, method):
 	for row in self.items:
-		if row.trade_transaction:
+		if row.get('trade_transaction'):
 			target_doc = frappe.get_doc("Trade Transactions", row.trade_transaction)
 			target_doc.invoice_no = self.name
 			target_doc.deal_status = "Invoiced"
@@ -426,7 +426,7 @@ def check_sub(string, sub_str):
 		return True
 
 
-from frappe.core.doctype.role.role import get_emails_from_role
+from frappe.core.doctype.role.role import get_info_based_on_role
 from frappe.utils import validate_email_address
 
 def get_list_of_recipients(self, doc, context):
@@ -468,7 +468,8 @@ def get_list_of_recipients(self, doc, context):
 
 		#For sending emails to specified role
 		if recipient.email_by_role:
-			emails = get_emails_from_role(recipient.email_by_role)
+			# get_emails_from_role (used in version-12) in version-13 get_info_based_on_role()
+			emails = get_info_based_on_role(recipient.email_by_role,'email')
 
 			for email in emails:
 				recipients = recipients + email.split("\n")
