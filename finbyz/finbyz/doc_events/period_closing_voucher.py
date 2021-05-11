@@ -5,7 +5,7 @@ from frappe.utils import flt
 from frappe import _
 from erpnext.accounts.utils import get_account_currency
 from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (get_accounting_dimensions,
-	get_dimension_filters)
+	get_dimensions)
 
 #Period closing voucher override for finance book.
 def make_gl_entries(self):
