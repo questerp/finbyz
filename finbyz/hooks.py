@@ -18,9 +18,9 @@ from frappe.email.doctype.notification.notification import Notification
 from finbyz.api import get_list_of_recipients
 Notification.get_list_of_recipients = get_list_of_recipients
 
-# from erpnext.accounts.doctype.period_closing_voucher.period_closing_voucher import PeriodClosingVoucher
+from erpnext.accounts.doctype.period_closing_voucher.period_closing_voucher import PeriodClosingVoucher
 from finbyz.finbyz.doc_events.period_closing_voucher import make_gl_entries
-# PeriodClosingVoucher.make_gl_entries = make_gl_entries
+PeriodClosingVoucher.make_gl_entries = make_gl_entries
 
 # Includes in <head>
 # ------------------
