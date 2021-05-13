@@ -20,18 +20,17 @@ def execute(filters=None):
 def get_columns():
 	
 	columns = [
-		{"label": _("Lead"), "fieldname": "lead", "fieldtype": "Link", "options": "Lead", "width": 80},
+		{"label": _("Lead"), "fieldname": "lead", "fieldtype": "Link", "options": "Lead", "width": 100},
 		{"label": _("User"), "fieldname": "user", "fieldtype": "Link", "options": "User", "width": 100},
-		{"label": _("Date"), "fieldname": "date", "fieldtype": "Date", "width": 120},
+		{"label": _("Date"), "fieldname": "date", "fieldtype": "Date", "width": 110},
 		{"label": _("Caller"), "fieldname": "caller", "fieldtype": "Data", "width": 110},
-		{"label": _("Organization"), "fieldname": "organization", "fieldtype": "Data", "width": 110},
-		{"label": _("Person"), "fieldname": "person", "fieldtype": "Data", "width": 110},
-		{"label": _("Comment"), "fieldname": "comment", "fieldtype": "Data", "width": 400},
+		{"label": _("Organization"), "fieldname": "organization", "fieldtype": "Data", "width": 216},
+		{"label": _("Person"), "fieldname": "person", "fieldtype": "Data", "width": 135},
+		{"label": _("Comment"), "fieldname": "comment", "fieldtype": "Data", "width": 375},
 		{"label": _("Schedule"), "fieldname": "schedule", "fieldtype": "Date", "width": 120},
-		{"label": _("Person"), "fieldname": "person", "fieldtype": "Data", "width": 110},
-		{"label": _("Source"), "fieldname": "source", "fieldtype": "Data", "width": 110},
+		{"label": _("Source"), "fieldname": "source", "fieldtype": "Data", "width": 85},
 		{"label": _("Status"), "fieldname": "status", "fieldtype": "Data", "width": 110},
-		{"label": _("Mobile"), "fieldname": "mobile", "fieldtype": "Data", "width": 110},
+		{"label": _("Mobile"), "fieldname": "mobile", "fieldtype": "Data", "width": 138},
 		{"label": _("Phone"), "fieldname": "phone", "fieldtype": "Data", "width": 110}
 	]
 	return columns
