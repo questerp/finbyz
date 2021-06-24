@@ -643,6 +643,9 @@ def send_sales_order_mails():
 				recipients.append(si.contact_email)
 				cc = cc + ', ' + si.owner
 
+			other_contact_list = [d.email_id for d in si.other_contacts]
+			recipients = recipients + other_contact_list
+			
 		message = header(customer) + '' + table + '' + footer(actual_amount, outstanding)
 		#recipient  = ['nirali.satapara@finbyz.tech']
 		
