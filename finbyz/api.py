@@ -3,9 +3,10 @@
 from __future__ import unicode_literals
 import frappe
 import datetime
+
 from frappe import sendmail, msgprint, db, _
 from frappe.utils import (
-	get_fullname, get_datetime, now_datetime, get_url_to_form, date_diff, add_days, add_months, getdate, cint, cstr)
+	get_fullname, get_datetime, nowdate, now_datetime, get_url_to_form, date_diff, add_days, add_months, getdate, cint, cstr)
 from frappe.core.doctype.communication.email import make
 from frappe.contacts.doctype.address.address import get_address_display, get_default_address
 from frappe.contacts.doctype.contact.contact import get_contact_details, get_default_contact
@@ -584,6 +585,7 @@ def send_sales_order_mails():
 
 	data = frappe.get_list("Sales Order", filters={
 			'status': ['in', ('To Deliver and Bill')],
+			'delivery_date': ("<", nowdate()),
 			'currency': 'INR',
 			'docstatus': 1,
 			'dont_send_payment_reminder': 0,

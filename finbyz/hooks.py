@@ -44,7 +44,8 @@ PeriodClosingVoucher.make_gl_entries = make_gl_entries
 doctype_js = {
 	"Lead": "public/js/doctype_js/lead.js",
 	"Sales Invoice": "public/js/doctype_js/sales_invoice.js",
-	"Issue":"public/js/doctype_js/issue.js"
+	"Issue":"public/js/doctype_js/issue.js",
+	"Sales Order":"public/js/doctype_js/sales_order.js"
 }
 
 # Home Pages
