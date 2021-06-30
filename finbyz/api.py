@@ -649,7 +649,7 @@ def send_sales_order_mails():
 			
 		message = header(customer) + '' + table + '' + footer(actual_amount, outstanding)
 		#recipient  = ['nirali.satapara@finbyz.tech']
-		recipients = set(recipients)
+		recipients = list(set(recipients))
 		try:
 			make(recipients=recipients,
 				sender = sender,
