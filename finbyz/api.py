@@ -518,7 +518,7 @@ def send_sales_order_mails():
 		return """<tr>
 				<td width="20%" valign="top" align="center"> {0} </td>
 				<td width="20%" valign="top" align="center"> {1} </td>
-				<td width="20%" valign="top" align="center"> {2} </td>
+				<td width="20%" valign="top" align="right"> {2} </td>
 				<td width="20%" valign="top" align="right"> {3} </td>
 				<td width="20%" valign="top" align="right"> {4} </td>
 			</tr>""".format(name, transaction_date, net_total, rounded_total, outstanding_amount)
