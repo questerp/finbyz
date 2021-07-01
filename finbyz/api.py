@@ -523,12 +523,16 @@ def send_sales_order_mails():
 				<td width="20%" valign="top" align="right"> {4} </td>
 			</tr>""".format(name, transaction_date, net_total, rounded_total, outstanding_amount)
 	
-	def footer(actual_amount, outstanding_amount):
+	def footer(net_amount,actual_amount, outstanding_amount):
+		net_amt = fmt_money(sum(net_amount), 2, 'INR')
 		actual_amt = fmt_money(sum(actual_amount), 2, 'INR')
 		outstanding_amt = fmt_money(sum(outstanding_amount), 2, 'INR')
 		return """<tr>
-					<td width="60%" colspan="3" valign="top" align="right">
+					<td width="40%" colspan="2" valign="top" align="right">
 						<strong>Net Receivable &nbsp; </strong>
+					</td>
+					<td align="right" width="20%" valign="top">
+						<strong> {} </strong>
 					</td>
 					<td align="right" width="20%" valign="top">
 						<strong> {} </strong>
@@ -579,7 +583,7 @@ def send_sales_order_mails():
 				<p style="color: rgb(34, 34, 34); margin: 0cm 0cm 0.0001pt; font-size: 11pt; font-family: Calibri, sans-serif; line-height: 12.65pt;"><a href="https://www.facebook.com/finbyz" style="color: rgb(17, 85, 204);" target="_blank"><span style="color: blue;"><img alt="Facebook" border="0" height="32" src="https://docs.google.com/a/finbyz.com/uc?id=0B3eTCgrrV-DDVjJvcXRscHBtLUE&amp;export=download" width="32"></span></a>  <a href="https://www.google.co.in/+finbyz" style="color: rgb(17, 85, 204);" target="_blank"><span style="color: blue;"><img alt="Google+" border="0" height="32" src="https://docs.google.com/a/finbyz.com/uc?id=0B3eTCgrrV-DDVHExNXR3VUxKaGs&amp;export=download" width="32"></span></a>  <a href="https://www.linkedin.com/company/finbyz" style="color: rgb(17, 85, 204);" target="_blank"><span style="color: blue;"><img alt="Linkedin" border="0" height="32" src="https://docs.google.com/a/finbyz.com/uc?id=0B3eTCgrrV-DDRGdHUExsbjVRR2s&amp;export=download" width="32"></span></a>  <a href="https://twitter.com/Finbyz" style="color: rgb(17, 85, 204);" target="_blank"><span style="color: blue;"><img alt="Twitter" border="0" height="32" src="https://docs.google.com/a/finbyz.com/uc?id=0B3eTCgrrV-DDTS1KRndoZnBXc1U&amp;export=download" width="32"></span></a></p>
 			</div>
 				
-				""".format(actual_amt, outstanding_amt)
+				""".format(net_amt,actual_amt, outstanding_amt)
 
 	non_customers = ()
 
@@ -610,7 +614,7 @@ def send_sales_order_mails():
 
 	sender = formataddr(("FinByz Tech Pvt. Ltd.", "info@finbyz.com"))
 	for customer in customers:
-		attachments, outstanding, actual_amount, recipients, cc = [], [], [], [], 'accounts@finbyz.tech'
+		attachments, outstanding, actual_amount, net_amount,recipients, cc = [], [], [], [], [], 'accounts@finbyz.tech'
 		table = ''
 
 		# customer_si = [d for d in data if d.customer == customer]
@@ -638,6 +642,7 @@ def send_sales_order_mails():
 
 			outstanding.append((si.rounded_total-si.advance_paid))
 			actual_amount.append(si.rounded_total or 0.0)
+			net_amount.append(si.net_total or 0.0)
 
 			if bool(si.contact_email) and si.contact_email not in recipients:
 				recipients.append(si.contact_email)
@@ -647,9 +652,9 @@ def send_sales_order_mails():
 				other_contact_list = [d.email_id for d in si.other_contacts]
 				recipients = recipients + other_contact_list
 			
-		message = header(customer) + '' + table + '' + footer(actual_amount, outstanding)
-		#recipient  = ['nirali.satapara@finbyz.tech']
+		message = header(customer) + '' + table + '' + footer(net_amount, actual_amount, outstanding)
 		recipients = list(set(recipients))
+		recipients  = ['nirali.satapara@finbyz.tech']
 		try:
 			make(recipients=recipients,
 				sender = sender,
