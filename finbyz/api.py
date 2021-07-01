@@ -657,6 +657,8 @@ def send_sales_order_mails():
 				content = message,
 				attachments = attachments,
 				cc = (cc),
+				doctype= "Salez Order",
+				name= si.name
 				send_email=True
 			)
 			
