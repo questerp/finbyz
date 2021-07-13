@@ -12,7 +12,13 @@ frappe.ui.form.on('Issue', {
         else{
             frappe.msgprint("Enter Project");
         }
-    })    
+    }),
+    frm.add_custom_button(__("Timesheet"), function() {
+        frappe.model.open_mapped_doc({
+            method:"finbyz.api.create_time_sheet",
+            frm:cur_frm
+        })
+    },__("Create"));
     }
 })
 

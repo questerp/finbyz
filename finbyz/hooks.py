@@ -116,9 +116,13 @@ doc_events = {
 	},
 	
 	"Timesheet": {
+		"before_validate":"finbyz.api.ts_before_validate",
 		"on_submit": "finbyz.api.ts_on_submit",
 		"on_cancel": "finbyz.api.ts_on_cancel"
 	},
+	# "Issue":{
+	# 	"validate":"finbyz.finbyz.doc_events.issue.validate"
+	# }
 }
 scheduler_events = {
 	"daily": [

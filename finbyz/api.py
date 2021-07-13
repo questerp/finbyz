@@ -307,6 +307,43 @@ def set_other_values(out, party, party_type):
 	for f in to_copy:
 		out[f] = party.get(f)
 		
+@frappe.whitelist()
+def create_time_sheet(source_name, target_doc=None,ignore_permissions=False):
+	def set_missing_values(source, target):
+		target.company=source.company
+		return target
+	def post_process(source,target):
+		row = target.append('time_logs', {})
+		row.from_time=datetime.datetime.now()
+		row.activity_type="Issue"
+		row.project=source.project
+		row.issue_ref_no=source.name
+
+
+	doclist = get_mapped_doc("Issue", source_name,
+		{"Issue": {
+			"doctype": "Timesheet",
+			"field_map": {
+				'company':'company',
+				'customer':'costomer',
+				'project':'parent_project'
+			}
+		}}, target_doc,post_process, set_missing_values)
+
+
+	return doclist
+
+	# doclist = get_mapped_doc("Timesheet",source_name,{
+	# 'Timesheet':{
+	# 	"doctype": "Issue",
+	# 	"field_map": {
+	# 		'company':'company',
+	# 		'customer':'costomer',
+	# 	},
+	# 	"field_no_map":['status']
+	# }
+	# }, target_doc)
+
 
 @frappe.whitelist()		
 def recalculate_depreciation(doc_name):
@@ -384,19 +421,36 @@ def asset_on_update_after_submit(self, method):
 				row.db_set('finance_book', d.finance_book)
 				row.db_set('finance_book_id', d.idx)
 
+def ts_before_validate(self,method):
+	if self._action=="submit":
+		for row in self.time_logs:
+			if not row.task:
+				doc = frappe.new_doc("Task")
+				doc.subject = row.activity_type
+				doc.project = row.project
+				doc.issue = row.issue_ref_no
+				doc.description = row.description
+				doc.save(ignore_permissions=True)
+				row.task = doc.name
+
 def ts_on_submit(self, method):
 	for row in self.time_logs:
 		if cint(row.completed):
 			doc = frappe.get_doc('Task', row.task)
 			doc.status = "Completed"
-			doc.save()
+			doc.completed_on = get_datetime(row.to_time).date()
+			doc.save(ignore_permissions=True)
 
 def ts_on_cancel(self, method):
 	for row in self.time_logs:
-		if cint(row.completed):
-			doc = frappe.get_doc('Task', row.task)
-			doc.status = "Open"
-			doc.save()
+		if row.task:
+			doc = frappe.get_doc("Task",row.task)
+			row.db_set('task',None)
+			doc.delete(ignore_permissions=True)
+		# if cint(row.completed):
+		# 	doc = frappe.get_doc('Task', row.task)
+		# 	doc.status = "Open"
+		# 	doc.save()
 
 @frappe.whitelist()
 def send_lead_mail(recipients, person, email_template, doc_name):
