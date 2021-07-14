@@ -11,6 +11,7 @@ from frappe.core.doctype.communication.email import make
 from frappe.contacts.doctype.address.address import get_address_display, get_default_address
 from frappe.contacts.doctype.contact.contact import get_contact_details, get_default_contact
 from frappe.utils.jinja import validate_template
+from frappe.utils import strip_html_tags
 from frappe.model.mapper import get_mapped_doc
 from email.utils import formataddr
 from erpnext.accounts.utils import get_fiscal_year
@@ -319,7 +320,7 @@ def create_time_sheet(source_name, target_doc=None,ignore_permissions=False):
 		row.activity_type="Issue"
 		row.project=source.project
 		row.issue=source.name
-
+		row.description = strip_html_tags(source.subject + "\n" + source.description)
 
 	doclist = get_mapped_doc("Issue", source_name,
 		{"Issue": {
