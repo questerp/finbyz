@@ -16,7 +16,8 @@ from email.utils import formataddr
 from erpnext.accounts.utils import get_fiscal_year
 from frappe.core.doctype.communication.email import make
 from frappe.email.smtp import get_outgoing_email_account
-	
+from erpnext.setup.utils import get_exchange_rate
+
 @frappe.whitelist()	
 def si_on_submit(self, method):
 	tradetx(self, method)
@@ -317,7 +318,7 @@ def create_time_sheet(source_name, target_doc=None,ignore_permissions=False):
 		row.from_time=datetime.datetime.now()
 		row.activity_type="Issue"
 		row.project=source.project
-		row.issue_ref_no=source.name
+		row.issue=source.name
 
 
 	doclist = get_mapped_doc("Issue", source_name,
@@ -428,7 +429,7 @@ def ts_before_validate(self,method):
 				doc = frappe.new_doc("Task")
 				doc.subject = row.activity_type
 				doc.project = row.project
-				doc.issue = row.issue_ref_no
+				doc.issue = row.issue
 				doc.description = row.description
 				doc.save(ignore_permissions=True)
 				row.task = doc.name
@@ -439,6 +440,7 @@ def ts_on_submit(self, method):
 			doc = frappe.get_doc('Task', row.task)
 			doc.status = "Completed"
 			doc.completed_on = get_datetime(row.to_time).date()
+			doc.completed_by = frappe.session.user
 			doc.save(ignore_permissions=True)
 
 def ts_on_cancel(self, method):
@@ -733,3 +735,17 @@ def send_sales_order_mails():
 def opportunity_validate(self,method):
 	if self.opportunity_amount and self.probability:
 		self.opportunity_size = self.opportunity_amount * self.probability / 100
+
+@frappe.whitelist()
+def get_activity_cost(employee=None, activity_type=None, currency=None):
+	base_currency = frappe.defaults.get_global_default('currency')
+	rate = frappe.db.get_values("Activity Cost", {"employee": employee}, ["costing_rate", "billing_rate"], as_dict=True)
+	if not rate:
+		rate = frappe.db.get_values("Activity Type", {"activity_type": activity_type},
+			["costing_rate", "billing_rate"], as_dict=True)
+		if rate and currency and currency!=base_currency:
+			exchange_rate = get_exchange_rate(base_currency, currency)
+			rate[0]["costing_rate"] = rate[0]["costing_rate"] * exchange_rate
+			rate[0]["billing_rate"] = rate[0]["billing_rate"] * exchange_rate
+
+	return rate[0] if rate else {}

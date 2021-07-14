@@ -160,6 +160,14 @@ scheduler_events = {
 # ------------------------------
 #
 # override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "finbyz.event.get_events"
+# 	"erpnext.projects.doctype.timesheet.timesheet.get_activity_cost": "finbyz.api.get_activity_cost"
 # }
 
+
+from erpnext.projects.doctype.timesheet import timesheet
+from finbyz.api import get_activity_cost
+timesheet.get_activity_cost = get_activity_cost
+
+override_doctype_dashboards = {
+	"Issue":"finbyz.finbyz.dashboard.issue.get_data",
+}
