@@ -749,3 +749,11 @@ def get_activity_cost(employee=None, activity_type=None, currency=None):
 			rate[0]["billing_rate"] = rate[0]["billing_rate"] * exchange_rate
 
 	return rate[0] if rate else {}
+
+def validate_project_dates(project_end_date, task, task_start, task_end, actual_or_expected_date):
+	pass
+	# if task.get(task_start) and date_diff(project_end_date, getdate(task.get(task_start))) < 0:
+	# 	frappe.throw(_("Task's {0} Start Date cannot be after Project's End Date.").format(actual_or_expected_date))
+
+	# if task.get(task_end) and date_diff(project_end_date, getdate(task.get(task_end))) < 0:
+	# 	frappe.throw(_("Task's {0} End Date cannot be after Project's End Date.").format(actual_or_expected_date))

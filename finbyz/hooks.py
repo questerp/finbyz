@@ -45,7 +45,8 @@ doctype_js = {
 	"Lead": "public/js/doctype_js/lead.js",
 	"Sales Invoice": "public/js/doctype_js/sales_invoice.js",
 	"Issue":"public/js/doctype_js/issue.js",
-	"Sales Order":"public/js/doctype_js/sales_order.js"
+	"Sales Order":"public/js/doctype_js/sales_order.js",
+	"Timesheet":"public/js/doctype_js/timesheet.js"
 }
 
 # Home Pages
@@ -167,6 +168,11 @@ scheduler_events = {
 from erpnext.projects.doctype.timesheet import timesheet
 from finbyz.api import get_activity_cost
 timesheet.get_activity_cost = get_activity_cost
+
+from erpnext.projects.doctype.task import task
+from finbyz.api import validate_project_dates
+task.validate_project_dates = validate_project_dates
+
 
 override_doctype_dashboards = {
 	"Issue":"finbyz.finbyz.dashboard.issue.get_data",
