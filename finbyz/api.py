@@ -311,6 +311,24 @@ def set_other_values(out, party, party_type):
 		
 @frappe.whitelist()
 def create_time_sheet(source_name, target_doc=None,ignore_permissions=False):
+	query = frappe.db.sql("""
+		select name from `tabTimesheet`
+		where owner = '{}' and CAST(creation as DATE) = '{}'
+		order by creation desc
+		limit 1
+	""".format(frappe.session.user,nowdate()),as_dict=1)
+	if query:
+		issue_doc = frappe.get_doc("Issue",source_name)
+		doc = frappe.get_doc("Timesheet",query[0].name)
+		doc.append("time_logs",{
+			"from_time":datetime.datetime.now(),
+			"activity_type":"Issue",
+			"project":issue_doc.project,
+			"issue":issue_doc.name,
+			"description":strip_html_tags(issue_doc.subject + "\n" + issue_doc.description)
+		})
+		doc.save(ignore_permissions=True)
+		return doc
 	def set_missing_values(source, target):
 		target.company=source.company
 		return target
