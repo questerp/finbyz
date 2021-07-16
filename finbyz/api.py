@@ -326,7 +326,7 @@ def create_time_sheet(source_name, target_doc=None,ignore_permissions=False):
 			"activity_type":"Issue",
 			"project":issue_doc.project,
 			"issue":issue_doc.name,
-			"description":strip_html_tags(issue_doc.subject + "\n" + issue_doc.description)
+			"description":desc
 		})
 		doc.save(ignore_permissions=True)
 		return doc
