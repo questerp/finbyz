@@ -164,10 +164,10 @@ scheduler_events = {
 # 	"erpnext.projects.doctype.timesheet.timesheet.get_activity_cost": "finbyz.api.get_activity_cost"
 # }
 
-
 from erpnext.projects.doctype.timesheet import timesheet
 from finbyz.api import get_activity_cost
 timesheet.get_activity_cost = get_activity_cost
+
 
 from erpnext.projects.doctype.task import task
 from finbyz.api import validate_project_dates

@@ -313,13 +313,14 @@ def set_other_values(out, party, party_type):
 def create_time_sheet(source_name, target_doc=None,ignore_permissions=False):
 	query = frappe.db.sql("""
 		select name from `tabTimesheet`
-		where owner = '{}' and CAST(creation as DATE) = '{}'
+		where owner = '{}' and CAST(creation as DATE) = '{}' and docstatus = 0
 		order by creation desc
 		limit 1
 	""".format(frappe.session.user,nowdate()),as_dict=1)
 	if query:
 		issue_doc = frappe.get_doc("Issue",source_name)
 		doc = frappe.get_doc("Timesheet",query[0].name)
+		desc = strip_html_tags(issue_doc.subject + "\n" + issue_doc.description) if issue_doc.description else strip_html_tags(issue_doc.subject)
 		doc.append("time_logs",{
 			"from_time":datetime.datetime.now(),
 			"activity_type":"Issue",
@@ -345,8 +346,9 @@ def create_time_sheet(source_name, target_doc=None,ignore_permissions=False):
 			"doctype": "Timesheet",
 			"field_map": {
 				'company':'company',
-				'customer':'costomer',
-				'project':'parent_project'
+			},
+			"field_no_map":{
+				"customer",
 			}
 		}}, target_doc,post_process, set_missing_values)
 
