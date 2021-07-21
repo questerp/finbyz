@@ -320,13 +320,13 @@ def create_time_sheet(source_name, target_doc=None,ignore_permissions=False):
 	if query:
 		issue_doc = frappe.get_doc("Issue",source_name)
 		doc = frappe.get_doc("Timesheet",query[0].name)
-		desc = strip_html_tags(issue_doc.subject + "\n" + issue_doc.description) if issue_doc.description else strip_html_tags(issue_doc.subject)
+		desc = strip_html_tags(issue_doc.subject + "\n" + issue_doc.description or '') if issue_doc.description else strip_html_tags(issue_doc.subject) or ''
 		doc.append("time_logs",{
 			"from_time":datetime.datetime.now(),
 			"activity_type":"Issue",
 			"project":issue_doc.project,
 			"issue":issue_doc.name,
-			"description":desc
+			"description":desc or ''
 		})
 		doc.save(ignore_permissions=True)
 		return doc
